@@ -3,3 +3,24 @@
 
 /* لا توجد منطقة نصية فوق أزرار حالات الطلبات. */
 .shell{margin-top:28px}
+
+/* تحسين القراءة على الشاشات الكبيرة: تستفيد الصفحة من المساحة المتاحة
+   وتبقى الأعمدة قابلة للتمرير بدل ضغط الخط إلى حجم غير مقروء. */
+body{font-size:15px}
+.topbar{min-height:96px;height:auto;padding:18px max(32px,calc((100vw - 1760px)/2))}
+.brand{gap:16px}.brand img{width:66px;height:66px}.brand b{font-size:20px}.brand small{font-size:13px}
+.live-status{padding:11px 16px;font-size:14px}.live-status i{width:10px;height:10px}
+.shell{width:calc(100% - 48px);margin-top:38px}
+.order-tabs{justify-content:flex-start;gap:14px;margin-bottom:24px}
+.tab{min-width:280px;padding:20px 24px;border-radius:18px;font-size:17px;gap:42px}
+.tab b{min-width:38px;height:38px;font-size:15px}
+.table-card{border-radius:24px}
+.table-toolbar{padding:28px 32px}.table-toolbar h2{font-size:24px;margin-bottom:6px}.table-toolbar small{font-size:13px}.table-toolbar label{font-size:14px}.table-toolbar select{padding:10px 13px;font-size:14px}
+table{min-width:1400px}th{padding:18px 20px;font-size:13px}td{padding:20px;font-size:14px}td strong{font-size:15px}td small{font-size:12px}.elapsed{min-width:106px;padding:8px 10px;font-size:13px}.view-button,.accept-button,.print-button{padding:11px 15px;font-size:13px;border-radius:11px}.actions{gap:8px}
+.pagination{padding:20px;gap:16px}.pagination button{padding:10px 16px;font-size:13px}.pagination span{font-size:13px}.empty-row td{padding:78px}
+
+@media(max-width:900px){
+  .topbar{padding:14px 20px}.brand img{width:54px;height:54px}.brand b{font-size:16px}.brand small{font-size:11px}.live-status{font-size:12px;padding:9px 12px}
+  .shell{width:calc(100% - 32px);margin-top:28px}.tab{min-width:0;flex:1;font-size:15px;padding:16px 18px}
+  .table-toolbar{padding:22px}.table-toolbar h2{font-size:20px}table{min-width:1150px}th{font-size:12px;padding:16px}td{font-size:13px;padding:16px}
+}
