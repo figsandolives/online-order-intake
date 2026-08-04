@@ -2,7 +2,7 @@ const $ = selector => document.querySelector(selector);
 const ORDER_ACTION_URL = "https://us-central1-menassafigs.cloudfunctions.net/acceptOnlineOrder";
 const PRINT_LOGO_URL = "https://figsolives.online/logo.png";
 const db = window.ORDERING_FIREBASE?.database;
-let orders = [], activeTab = "new", page = 1, pageSize = 10;
+let orders = [], activeTab = "new", activeCatalog = "bakery", page = 1, pageSize = 10;
 let soundEnabled = localStorage.getItem("figsOlivesOrderBellEnabled") === "1";
 let bellRinging = false;
 const money = value => `${Number(value || 0).toFixed(3)} د.ك`;
@@ -11,16 +11,22 @@ const preparationOverTwoHours = preparation => { if (!preparation) return false;
 const invoicePreparationNotice = order => (order.items || []).some(item => preparationOverTwoHours(item.preparation) || (item.options || []).some(option => preparationOverTwoHours(option.preparation))) ? `<p class="a4-preparation-notice">ملاحظة: يوجد في طلبك أصناف تأخذ وقت للتجهيز.. لذا يرجى العلم أنه قد يتأخر طلبك أو يتم تأجيله.</p>` : "";
 const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[char]));
 const dateText = value => value ? new Date(Number(value) || value).toLocaleString("ar-KW", { dateStyle:"medium", timeStyle:"short" }) : "—";
-const deliveryText = order => order.mode === "pickup" ? "استلام من الفرع" : `توصيل${order.areaName ? ` — ${order.areaName}` : ""}`;
+const branchName = id => ({ hawalli: "فرع حولي", yarmouk: "فرع اليرموك", abu: "فرع أبو الحصانية" }[id] || "الفرع");
+const pickupText = order => `استلام من ${branchName(order.branchId)}`;
+const deliveryText = order => order.mode === "pickup" ? pickupText(order) : `توصيل${order.areaName ? ` — ${order.areaName}` : ""}`;
 const dueText = order => {
   const seconds = Math.max(0, Math.floor((Date.now() - Number(order.createdAt || Date.now())) / 1000));
   const hours = String(Math.floor(seconds / 3600)).padStart(2, "0"), minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0"), secs = String(seconds % 60).padStart(2, "0");
   return `${hours}:${minutes}:${secs}`;
 };
-function filteredOrders() { return orders.filter(order => activeTab === "new" ? order.status !== "accepted" : order.status === "accepted").sort((a,b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)); }
+function isRestaurantOrder(order) { return order.catalogType === "restaurant" || (order.items || []).some(item => item.catalogType === "restaurant"); }
+function scopedOrders() { return orders.filter(order => activeCatalog === "restaurant" ? isRestaurantOrder(order) : !isRestaurantOrder(order)); }
+function filteredOrders() { return scopedOrders().filter(order => activeTab === "new" ? order.status !== "accepted" : order.status === "accepted").sort((a,b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)); }
 function render() {
   const listed = filteredOrders(), pages = Math.max(1, Math.ceil(listed.length / pageSize)); page = Math.min(page, pages);
-  $("#newCount").textContent = orders.filter(order => order.status !== "accepted").length; $("#acceptedCount").textContent = orders.filter(order => order.status === "accepted").length;
+  const scoped = scopedOrders();
+  $("#newCount").textContent = scoped.filter(order => order.status !== "accepted").length; $("#acceptedCount").textContent = scoped.filter(order => order.status === "accepted").length;
+  $("#trackerBrand").textContent = activeCatalog === "restaurant" ? "مطعم التين الطبيعي" : "مخبز التين والزيتون";
   $("#tableTitle").textContent = activeTab === "new" ? "الطلبات الجديدة" : "الطلبات المقبولة";
   $("#tableHint").textContent = activeTab === "new" ? "طلبات تحتاج إلى قبول" : "طلبات تم قبولها وجاهزة للطباعة";
   $("#ordersHead").innerHTML = activeTab === "new" ? "<tr><th>رقم الفاتورة</th><th>الاسم</th><th>رقم الهاتف</th><th>السعر الإجمالي</th><th>طريقة التوصيل</th><th>تاريخ الإنشاء</th><th>موعد التوصيل</th><th>انقضى</th><th>عرض</th></tr>" : "<tr><th>رقم الفاتورة</th><th>الاسم</th><th>رقم الهاتف</th><th>السعر الإجمالي</th><th>طريقة التوصيل</th><th>تاريخ الإنشاء</th><th>عرض</th></tr>";
@@ -37,6 +43,22 @@ function trackerPrintInvoice(order) { const delivery = order.mode === "pickup" ?
 function showOrder(order) { const delivery = order.mode === "pickup" ? order.branchId || "—" : `${order.areaName || ""} — ${order.address || ""}`; const items = (order.items || []).map((item,index)=>`<tr><td>${index+1}</td><td><b>${escapeHtml(item.name || item.nameAr || item.id)}</b><small dir="ltr">${escapeHtml(item.nameEn || item.name || item.id)}</small></td><td>${escapeHtml(item.note || "—")}</td><td>${item.quantity}</td><td>${money(item.unitPrice)}</td><td>${money(item.total || item.unitPrice * item.quantity)}</td></tr>`).join(""); $("#orderDetails").innerHTML = `<div class="order-view-top"><div><span>فاتورة شراء</span><h1>#${escapeHtml(order.orderId)}</h1><small>تاريخ الإصدار: ${dateText(order.createdAt)}</small></div><div class="dialog-actions">${order.status === "accepted" ? `<button class="print-button" data-print="${escapeHtml(order.orderId)}">طباعة الفاتورة</button>` : `<button class="accept-button" data-accept="${escapeHtml(order.orderId)}">قبول الطلب</button>`}</div></div><main class="order-view-grid"><section class="order-info-card"><h2>معلومات الفاتورة</h2><dl><div><dt>العميل</dt><dd>${escapeHtml(order.customerName || "—")}</dd></div><div><dt>الهاتف</dt><dd dir="ltr">${escapeHtml(order.phone || "—")}</dd></div><div><dt>نوع الطلب</dt><dd>${escapeHtml(deliveryText(order))}</dd></div><div><dt>العنوان / الفرع</dt><dd>${escapeHtml(delivery)}</dd></div><div><dt>موعد التوصيل</dt><dd>${order.scheduledAt ? dateText(order.scheduledAt) : order.deliveryTiming === "asap" ? "أقرب وقت" : "عند الجاهزية"}</dd></div><div><dt>طريقة الدفع</dt><dd>${String(order.paymentMethod || "KNET").toUpperCase()}</dd></div></dl><div class="order-total"><span>الإجمالي</span><strong>${money(order.total)}</strong></div></section><section class="order-products-card"><h2>المنتجات</h2><table class="items"><thead><tr><th>#</th><th>الصنف</th><th>الملاحظات</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${items || '<tr><td colspan="6">لا توجد منتجات</td></tr>'}</tbody></table></section></main>`; if (!$("#orderDialog").open) $("#orderDialog").showModal(); }
 async function acceptOrder(orderId) { const button = document.querySelector(`[data-accept="${CSS.escape(orderId)}"]`); if (button) { button.disabled = true; button.textContent = "جارٍ القبول…"; } try { const response = await fetch(ORDER_ACTION_URL,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({orderId})}); const data = await response.json().catch(()=>({})); if (!response.ok || !data.ok) throw new Error(data.error || "تعذر قبول الطلب"); const accepted = { ...(orders.find(order => order.orderId === orderId) || {}), status:"accepted", acceptedAt:new Date().toISOString() }; orders = orders.map(order => order.orderId === orderId ? accepted : order); render(); setSound(); showOrder(accepted); } catch(error) { alert(error.message || "تعذر قبول الطلب"); if (button) { button.disabled=false; button.textContent="قبول الطلب"; } } }
 async function printOrder(order) { document.querySelector(".print-sheet")?.remove(); const sheet = document.createElement("div"); sheet.className="print-sheet"; sheet.innerHTML=trackerPrintInvoice(order); document.body.append(sheet); const logo = sheet.querySelector("img"); await Promise.race([logo?.decode?.().catch(()=>undefined), new Promise(resolve => setTimeout(resolve, 1200))]); window.print(); sheet.remove(); }
+// Override the legacy print helper so pickup invoices explicitly name the branch.
+async function printOrder(order) {
+  document.querySelector(".print-sheet")?.remove();
+  const sheet = document.createElement("div");
+  sheet.className = "print-sheet";
+  sheet.innerHTML = trackerPrintInvoice(order);
+  if (order.mode === "pickup") {
+    const customerLine = sheet.querySelector(".a4-customer-line");
+    if (customerLine) customerLine.innerHTML = `${escapeHtml(order.customerName || "—")} <i>·</i> <span dir="ltr">${escapeHtml(order.phone || "—")}</span> <i>·</i> ${escapeHtml(pickupText(order))}`;
+  }
+  document.body.append(sheet);
+  const logo = sheet.querySelector("img");
+  await Promise.race([logo?.decode?.().catch(() => undefined), new Promise(resolve => setTimeout(resolve, 1200))]);
+  window.print();
+  sheet.remove();
+}
 function updateSoundButton() { const button = $("#enableSoundButton"); button.classList.toggle("active", soundEnabled); button.textContent = soundEnabled ? "جرس الطلبات مفعّل" : "تفعيل جرس الطلبات"; }
 function hasPendingOrders() { return orders.some(order => order.status !== "accepted"); }
 function stopOrderBell() { const audio = $("#newOrderSound"); bellRinging = false; audio.loop = false; audio.pause(); audio.currentTime = 0; }
@@ -46,6 +68,7 @@ function setSound() { if (soundEnabled && hasPendingOrders()) startOrderBell(); 
 $("#enableSoundButton").onclick = enableOrderBell;
 updateSoundButton();
 document.querySelectorAll("[data-tab]").forEach(button=>button.onclick=()=>{activeTab=button.dataset.tab; page=1; document.querySelectorAll("[data-tab]").forEach(tab=>tab.classList.toggle("active",tab===button)); render();});
+document.querySelectorAll("[data-catalog]").forEach(button=>button.onclick=()=>{activeCatalog=button.dataset.catalog; page=1; document.querySelectorAll("[data-catalog]").forEach(tab=>tab.classList.toggle("active",tab===button)); render(); setSound();});
 $("#pageSize").onchange=event=>{pageSize=Number(event.target.value);page=1;render();}; $("#previousPage").onclick=()=>{page--;render();}; $("#nextPage").onclick=()=>{page++;render();}; $("#closeDialog").onclick=()=>$("#orderDialog").close(); $("#orderDialog").onclick=event=>{if(event.target===$("#orderDialog")) $("#orderDialog").close();};
 document.addEventListener("click",event=>{const view=event.target.closest("[data-view]"),accept=event.target.closest("[data-accept]"),print=event.target.closest("[data-print]");if(view){const order=orders.find(item=>item.orderId===view.dataset.view);if(order)showOrder(order);}if(accept)acceptOrder(accept.dataset.accept);if(print){const order=orders.find(item=>item.orderId===print.dataset.print);if(order)printOrder(order);}});
 if (!db) { $("#ordersBody").innerHTML='<tr class="empty-row"><td colspan="9">تعذر الاتصال بقاعدة البيانات.</td></tr>'; } else window.ORDERING_FIREBASE.auth.signInAnonymously().catch(()=>undefined).finally(()=>db.ref("orderingPlatform/onlineOrders").on("value",snapshot=>{orders=Object.values(snapshot.val()||{});render();setSound();},()=>{$("#ordersBody").innerHTML='<tr class="empty-row"><td colspan="9">تعذر قراءة الطلبات. تأكد من نشر قواعد Firebase الجديدة.</td></tr>';}));

@@ -11,8 +11,9 @@
   <link rel="stylesheet" href="style.css?v=20260803-13">
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="../منصة الطلبات/index.html"><img src="logo.png" alt="مخبز التين والزيتون"><span><b>مخبز التين والزيتون</b><small>متابعة طلبات الأونلاين</small></span></a><div style="display:flex;align-items:center;gap:10px"><button class="sound-button" id="enableSoundButton" type="button">تفعيل جرس الطلبات</button><div class="live-status"><i></i> تحديث مباشر</div></div></header>
+  <header class="topbar"><a class="brand" href="../منصة الطلبات/index.html"><img src="logo.png" alt="مخبز التين والزيتون"><span><b id="trackerBrand">مخبز التين والزيتون</b><small>متابعة طلبات الأونلاين</small></span></a><div style="display:flex;align-items:center;gap:10px"><button class="sound-button" id="enableSoundButton" type="button">تفعيل جرس الطلبات</button><div class="live-status"><i></i> تحديث مباشر</div></div></header>
   <main class="shell">
+    <section class="catalog-tabs" aria-label="نوع الكتالوج"><button class="catalog-tab active" data-catalog="bakery">المخبز</button><button class="catalog-tab" data-catalog="restaurant">المطعم</button></section>
     <section class="order-tabs" aria-label="حالة الطلبات"><button class="tab" data-tab="accepted"><span>الطلبات المقبولة</span><b id="acceptedCount">0</b></button><button class="tab active" data-tab="new"><span>طلبات جديدة</span><b id="newCount">0</b></button></section>
     <section class="table-card"><div class="table-toolbar"><div><h2 id="tableTitle">الطلبات الجديدة</h2><small id="tableHint">طلبات تحتاج إلى قبول</small></div><label>عرض <select id="pageSize"><option value="10">10</option><option value="20">20</option><option value="50">50</option><option value="100">100</option></select> فاتورة</label></div><div class="table-wrap"><table><thead id="ordersHead"></thead><tbody id="ordersBody"></tbody></table></div><footer class="pagination"><button id="previousPage">السابق</button><span id="pageInfo">1 / 1</span><button id="nextPage">التالي</button></footer></section>
   </main>
