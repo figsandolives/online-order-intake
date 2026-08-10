@@ -88,7 +88,7 @@ async function createTransferPdfBase64(order) {
     let remaining = imageHeight, y = 10;
     pdf.addImage(image, "JPEG", 10, y, width, imageHeight, undefined, "FAST");
     remaining -= printableHeight;
-    while (remaining > .5) { pdf.addPage(); y = 10 - (imageHeight - remaining); pdf.addImage(image, "JPEG", 10, y, width, imageHeight, undefined, "FAST"); remaining -= printableHeight; }
+    while (remaining > .5) { pdf.addPage(); y = -(imageHeight - remaining); pdf.addImage(image, "JPEG", 10, y, width, imageHeight, undefined, "FAST"); remaining -= printableHeight; }
     return pdf.output("datauristring").split(",")[1];
   } finally { exportNode.remove(); }
 }
