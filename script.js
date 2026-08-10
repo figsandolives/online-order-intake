@@ -70,7 +70,9 @@ async function printOrder(order) {
 async function createTransferPdfBase64(order) {
   if (!window.html2canvas || !window.jspdf?.jsPDF) throw new Error("تعذر تجهيز ملف PDF في المتصفح");
   const exportNode = document.createElement("div");
-  exportNode.className = "pdf-export";
+  // Reuse the exact A4 print stylesheet; without print-sheet the logo and
+  // invoice dimensions are rendered as unstyled page content.
+  exportNode.className = "print-sheet pdf-export";
   exportNode.innerHTML = trackerPrintInvoice(order);
   document.body.append(exportNode);
   try {
@@ -99,7 +101,7 @@ async function transferToYarmouk(orderId, button) {
     const response = await fetch(YARMOUK_TRANSFER_URL, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ orderId, pdfBase64 }) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.ok) throw new Error(data.error || "تعذر التحويل إلى فرع اليرموك");
-    const transferred = { ...order, branchTransfer: { branch: "yarmouk", status: "sent", phone: "65162277", transferredAt: data.transferredAt || new Date().toISOString() } };
+    const transferred = { ...order, branchTransfer: { branch: "yarmouk", status: "sent", phone: "50203306", transferredAt: data.transferredAt || new Date().toISOString() } };
     orders = orders.map(item => item.orderId === orderId ? transferred : item); render();
   } catch (error) { alert(error.message || "تعذر التحويل إلى فرع اليرموك"); button.disabled = false; button.textContent = "تحويل إلى اليرموك"; }
 }
