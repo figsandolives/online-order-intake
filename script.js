@@ -1,9 +1,39 @@
 const $ = selector => document.querySelector(selector);
-const ORDER_ACTION_URL = "https://us-central1-menassafigs.cloudfunctions.net/acceptOnlineOrder";
-const YARMOUK_TRANSFER_URL = "https://us-central1-menassafigs.cloudfunctions.net/transferOnlineOrderToYarmouk";
-const YARMOUK_CANCEL_URL = "https://us-central1-menassafigs.cloudfunctions.net/cancelOnlineOrderYarmoukTransfer";
+const API_BASE = "https://162-35-27-249.sslip.io/platform-api";
 const PRINT_LOGO_URL = "https://figsolives.online/logo.png";
-const db = window.ORDERING_FIREBASE?.database;
+let employeeToken = sessionStorage.getItem("figsTrackerSession") || "";
+
+async function apiRequest(path, options = {}) {
+  async function send() {
+    const headers = { Accept: "application/json", ...(options.headers || {}) };
+    if (employeeToken) headers.Authorization = `Bearer ${employeeToken}`;
+    return fetch(`${API_BASE}${path}`, { ...options, headers });
+  }
+  let response = await send();
+  if (response.status !== 401) return response;
+  const code = window.prompt("أدخل رمز إدارة المنصة");
+  if (!code) throw new Error("يلزم رمز الإدارة لعرض الطلبات");
+  const login = await fetch(`${API_BASE}/auth/employee`, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ code }) });
+  const session = await login.json().catch(() => ({}));
+  if (!login.ok || !session.sessionToken) throw new Error(session.error || "رمز الإدارة غير صحيح");
+  employeeToken = session.sessionToken;
+  sessionStorage.setItem("figsTrackerSession", employeeToken);
+  response = await send();
+  return response;
+}
+
+async function refreshOrders() {
+  try {
+    const response = await apiRequest("/admin/orders");
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !Array.isArray(data)) throw new Error(data.error || "تعذر قراءة الطلبات");
+    orders = data;
+    render();
+    setSound();
+  } catch (error) {
+    $("#ordersBody").innerHTML = `<tr class="empty-row"><td colspan="9">${escapeHtml(error.message || "تعذر قراءة الطلبات")}</td></tr>`;
+  }
+}
 let orders = [], activeTab = "new", activeCatalog = localStorage.getItem("figsOlivesTrackerCatalog") === "restaurant" ? "restaurant" : "bakery", page = 1, pageSize = 10;
 let soundEnabled = localStorage.getItem("figsOlivesOrderBellEnabled") === "1";
 let bellRinging = false;
@@ -51,7 +81,7 @@ function invoiceHtml(order) { const delivery = order.mode === "pickup" ? order.b
 function trackerDeliveryTime(order) { if (!order.scheduledAt) return order.deliveryTiming === "asap" ? "أقرب وقت متاح" : "إبلاغ العميل عند الجاهزية"; const end = new Date(order.scheduledAt), start = new Date(end.getTime() - 3600000); const date = new Intl.DateTimeFormat("ar-KW", { weekday:"long", day:"numeric", month:"long", year:"numeric" }).format(end); const time = value => new Intl.DateTimeFormat("ar-KW", {hour:"numeric",minute:"2-digit"}).format(value); return `وقت التوصيل المحدد:<br>${date}،<br>بين ${time(start)} إلى ${time(end)}`; }
 function trackerPrintInvoice(order) { const delivery = order.mode === "pickup" ? order.branchId || "الفرع" : `${order.areaName || ""} — ${order.address || ""}`; const rows = (order.items || []).map((item,index)=>`<tr><td>${index+1}</td><td><b>${invoiceItemName(item)}</b><small dir="ltr">${escapeHtml(item.nameEn || item.name || item.id)}</small></td><td>${escapeHtml(item.note || "—")}</td><td>${item.quantity}</td><td>${money(item.unitPrice)}</td><td>${money(item.total || item.unitPrice * item.quantity)}</td></tr>`).join(""); return `<section class="a4-invoice"><header class="a4-head"><img src="${PRINT_LOGO_URL}" alt="مخبز التين والزيتون"><div><h1>فاتورة شراء</h1><p>Purchase Invoice</p></div></header><section class="a4-meta"><div><b>رقم الفاتورة</b><strong>#${escapeHtml(order.orderId)}</strong><b>تاريخ الإصدار</b><strong>${dateText(order.createdAt)}</strong></div><div class="a4-company">شركة صحي ولذيذ للتجهيزات الغذائية<br>حولي، شارع تونس، مجمع علي فهد الخالد، دور الميزانين<br><span dir="ltr">66906605 · 22085888</span></div></section><p class="a4-customer-line">${escapeHtml(order.customerName || "—")} <i>·</i> <span dir="ltr">${escapeHtml(order.phone || "—")}</span> <i>·</i> ${escapeHtml(delivery)}</p><table class="a4-items"><thead><tr><th>#</th><th>الصنف</th><th>الملاحظات</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${rows}</tbody></table>${invoicePreparationNotice(order)}<section class="a4-summary-row"><div class="a4-delivery-time"><small>وقت التوصيل</small><b>${trackerDeliveryTime(order)}</b></div>${invoicePrintTotalsHtml(order)}</section><div class="a4-paid">✓&nbsp; مدفوع: ${escapeHtml(String(order.paymentMethod || "KNET").toUpperCase())}</div></section>`; }
 function showOrder(order) { const delivery = order.mode === "pickup" ? order.branchId || "—" : `${order.areaName || ""} — ${order.address || ""}`; const items = (order.items || []).map((item,index)=>`<tr><td>${index+1}</td><td><b>${escapeHtml(item.name || item.nameAr || item.id)}</b><small dir="ltr">${escapeHtml(item.nameEn || item.name || item.id)}</small></td><td>${escapeHtml(item.note || "—")}</td><td>${item.quantity}</td><td>${money(item.unitPrice)}</td><td>${money(item.total || item.unitPrice * item.quantity)}</td></tr>`).join(""); $("#orderDetails").innerHTML = `<div class="order-view-top"><div><span>فاتورة شراء</span><h1>#${escapeHtml(order.orderId)}</h1><small>تاريخ الإصدار: ${dateText(order.createdAt)}</small></div><div class="dialog-actions">${order.status === "accepted" ? `<button class="print-button" data-print="${escapeHtml(order.orderId)}">طباعة الفاتورة</button>` : `<button class="accept-button" data-accept="${escapeHtml(order.orderId)}">قبول الطلب</button>`}</div></div><main class="order-view-grid"><section class="order-info-card"><h2>معلومات الفاتورة</h2><dl><div><dt>العميل</dt><dd>${escapeHtml(order.customerName || "—")}</dd></div><div><dt>الهاتف</dt><dd dir="ltr">${escapeHtml(order.phone || "—")}</dd></div><div><dt>نوع الطلب</dt><dd>${escapeHtml(deliveryText(order))}</dd></div><div><dt>العنوان / الفرع</dt><dd>${escapeHtml(delivery)}</dd></div><div><dt>موعد التوصيل</dt><dd>${order.scheduledAt ? dateText(order.scheduledAt) : order.deliveryTiming === "asap" ? "أقرب وقت" : "عند الجاهزية"}</dd></div><div><dt>طريقة الدفع</dt><dd>${String(order.paymentMethod || "KNET").toUpperCase()}</dd></div></dl><div class="order-total"><span>الإجمالي</span><strong>${money(order.total)}</strong></div></section><section class="order-products-card"><h2>المنتجات</h2><table class="items"><thead><tr><th>#</th><th>الصنف</th><th>الملاحظات</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${items || '<tr><td colspan="6">لا توجد منتجات</td></tr>'}</tbody></table></section></main>`; if (!$("#orderDialog").open) $("#orderDialog").showModal(); }
-async function acceptOrder(orderId) { const button = document.querySelector(`[data-accept="${CSS.escape(orderId)}"]`); if (button) { button.disabled = true; button.textContent = "جارٍ القبول…"; } try { const response = await fetch(ORDER_ACTION_URL,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({orderId})}); const data = await response.json().catch(()=>({})); if (!response.ok || !data.ok) throw new Error(data.error || "تعذر قبول الطلب"); const accepted = { ...(orders.find(order => order.orderId === orderId) || {}), status:"accepted", acceptedAt:new Date().toISOString() }; orders = orders.map(order => order.orderId === orderId ? accepted : order); render(); setSound(); showOrder(accepted); } catch(error) { alert(error.message || "تعذر قبول الطلب"); if (button) { button.disabled=false; button.textContent="قبول الطلب"; } } }
+async function acceptOrder(orderId) { const button = document.querySelector(`[data-accept="${CSS.escape(orderId)}"]`); if (button) { button.disabled = true; button.textContent = "جارٍ القبول…"; } try { const response = await apiRequest("/admin/orders/accept",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({orderId})}); const data = await response.json().catch(()=>({})); if (!response.ok || !data.ok) throw new Error(data.error || "تعذر قبول الطلب"); const accepted = { ...(orders.find(order => order.orderId === orderId) || {}), status:"accepted", acceptedAt:new Date().toISOString() }; orders = orders.map(order => order.orderId === orderId ? accepted : order); render(); setSound(); showOrder(accepted); } catch(error) { alert(error.message || "تعذر قبول الطلب"); if (button) { button.disabled=false; button.textContent="قبول الطلب"; } } }
 async function printOrder(order) { document.querySelector(".print-sheet")?.remove(); const sheet = document.createElement("div"); sheet.className="print-sheet"; sheet.innerHTML=trackerPrintInvoice(order); document.body.append(sheet); const logo = sheet.querySelector("img"); await Promise.race([logo?.decode?.().catch(()=>undefined), new Promise(resolve => setTimeout(resolve, 1200))]); window.print(); sheet.remove(); }
 // Override the legacy print helper so pickup invoices explicitly name the branch.
 async function printOrder(order) {
@@ -100,7 +130,7 @@ async function transferToYarmouk(orderId, button) {
   button.disabled = true; button.textContent = "جارٍ التحويل…";
   try {
     const pdfBase64 = await createTransferPdfBase64(order);
-    const response = await fetch(YARMOUK_TRANSFER_URL, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ orderId, pdfBase64 }) });
+    const response = await apiRequest("/admin/orders/transfer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId, pdfBase64 }) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.ok) throw new Error(data.error || "تعذر التحويل إلى فرع اليرموك");
     const transferred = { ...order, branchTransfer: { branch: "yarmouk", status: "sent", phone: "50203306", transferredAt: data.transferredAt || new Date().toISOString() } };
@@ -110,7 +140,7 @@ async function transferToYarmouk(orderId, button) {
 async function cancelYarmoukTransfer(orderId, button) {
   button.disabled = true; button.textContent = "جارٍ الإلغاء…";
   try {
-    const response = await fetch(YARMOUK_CANCEL_URL, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ orderId }) });
+    const response = await apiRequest("/admin/orders/cancel-transfer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId }) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.ok) throw new Error(data.error || "تعذر إلغاء التحويل");
     orders = orders.map(item => item.orderId === orderId ? { ...item, branchTransfer: null } : item); render();
@@ -131,5 +161,6 @@ $("#catalogMenuButton").onclick=event=>{event.stopPropagation();const menu=$("#c
 document.addEventListener("click",event=>{if(!event.target.closest(".catalog-menu")) $("#catalogMenu").classList.add("hidden");});
 $("#pageSize").onchange=event=>{pageSize=Number(event.target.value);page=1;render();}; $("#previousPage").onclick=()=>{page--;render();}; $("#nextPage").onclick=()=>{page++;render();}; $("#closeDialog").onclick=()=>$("#orderDialog").close(); $("#orderDialog").onclick=event=>{if(event.target===$("#orderDialog")) $("#orderDialog").close();};
 document.addEventListener("click",event=>{const view=event.target.closest("[data-view]"),accept=event.target.closest("[data-accept]"),print=event.target.closest("[data-print]"),transferMenu=event.target.closest("[data-transfer-menu]"),transfer=event.target.closest("[data-transfer]"),cancelTransfer=event.target.closest("[data-cancel-transfer]");if(view){const order=orders.find(item=>item.orderId===view.dataset.view);if(order)showOrder(order);}if(accept)acceptOrder(accept.dataset.accept);if(print){const order=orders.find(item=>item.orderId===print.dataset.print);if(order)printOrder(order);}if(transferMenu){const menu=transferMenu.closest(".transfer-menu");const open=menu.querySelector(".transfer-popover");document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(!open)menu.insertAdjacentHTML("beforeend",`<div class="transfer-popover"><button class="transfer-button" data-transfer="${escapeHtml(transferMenu.dataset.transferMenu)}">تحويل إلى اليرموك</button></div>`);}else if(!transfer&&!event.target.closest(".transfer-popover"))document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(transfer)transferToYarmouk(transfer.dataset.transfer,transfer);if(cancelTransfer)cancelYarmoukTransfer(cancelTransfer.dataset.cancelTransfer,cancelTransfer);});
-if (!db) { $("#ordersBody").innerHTML='<tr class="empty-row"><td colspan="9">تعذر الاتصال بقاعدة البيانات.</td></tr>'; } else window.ORDERING_FIREBASE.auth.signInAnonymously().catch(()=>undefined).finally(()=>db.ref("orderingPlatform/onlineOrders").on("value",snapshot=>{orders=Object.values(snapshot.val()||{});render();setSound();},()=>{$("#ordersBody").innerHTML='<tr class="empty-row"><td colspan="9">تعذر قراءة الطلبات. تأكد من نشر قواعد Firebase الجديدة.</td></tr>';}));
+refreshOrders();
+setInterval(refreshOrders, 10000);
 setInterval(refreshTimers,1000); render();
