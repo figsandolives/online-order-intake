@@ -31,7 +31,11 @@ async function refreshOrders() {
     render();
     setSound();
   } catch (error) {
-    $("#ordersBody").innerHTML = `<tr class="empty-row"><td colspan="9">${escapeHtml(error.message || "تعذر قراءة الطلبات")}</td></tr>`;
+    // Keep the last successful list visible during a brief network interruption.
+    // Replacing it with an error makes the operational screen look empty even
+    // though the orders are still available on the next refresh.
+    if (!orders.length) $("#ordersBody").innerHTML = `<tr class="empty-row"><td colspan="9">${escapeHtml(error.message || "تعذر قراءة الطلبات")}</td></tr>`;
+    else console.warn("Order refresh failed; keeping the displayed list.", error);
   }
 }
 let orders = [], activeTab = "new", activeCatalog = localStorage.getItem("figsOlivesTrackerCatalog") === "restaurant" ? "restaurant" : "bakery", page = 1, pageSize = 10;
@@ -162,5 +166,5 @@ document.addEventListener("click",event=>{if(!event.target.closest(".catalog-men
 $("#pageSize").onchange=event=>{pageSize=Number(event.target.value);page=1;render();}; $("#previousPage").onclick=()=>{page--;render();}; $("#nextPage").onclick=()=>{page++;render();}; $("#closeDialog").onclick=()=>$("#orderDialog").close(); $("#orderDialog").onclick=event=>{if(event.target===$("#orderDialog")) $("#orderDialog").close();};
 document.addEventListener("click",event=>{const view=event.target.closest("[data-view]"),accept=event.target.closest("[data-accept]"),print=event.target.closest("[data-print]"),transferMenu=event.target.closest("[data-transfer-menu]"),transfer=event.target.closest("[data-transfer]"),cancelTransfer=event.target.closest("[data-cancel-transfer]");if(view){const order=orders.find(item=>item.orderId===view.dataset.view);if(order)showOrder(order);}if(accept)acceptOrder(accept.dataset.accept);if(print){const order=orders.find(item=>item.orderId===print.dataset.print);if(order)printOrder(order);}if(transferMenu){const menu=transferMenu.closest(".transfer-menu");const open=menu.querySelector(".transfer-popover");document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(!open)menu.insertAdjacentHTML("beforeend",`<div class="transfer-popover"><button class="transfer-button" data-transfer="${escapeHtml(transferMenu.dataset.transferMenu)}">تحويل إلى اليرموك</button></div>`);}else if(!transfer&&!event.target.closest(".transfer-popover"))document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(transfer)transferToYarmouk(transfer.dataset.transfer,transfer);if(cancelTransfer)cancelYarmoukTransfer(cancelTransfer.dataset.cancelTransfer,cancelTransfer);});
 refreshOrders();
-setInterval(refreshOrders, 10000);
+setInterval(refreshOrders, 30000);
 setInterval(refreshTimers,1000); render();
