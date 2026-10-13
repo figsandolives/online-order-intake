@@ -1,9 +1,17 @@
 /* الفاتورة المطبوعة (A4) وملف PDF للتحويل — هوية المخبز بالأخضر والذهبي مع عمود الملاحظات. */
 .print-sheet{display:none}
 .print-sheet.pdf-export{display:block;position:fixed;top:0;left:-10000px;z-index:-1;width:794px;background:#fff}
-.print-sheet.pdf-export .inv{padding:40px 38px}
+.print-sheet.pdf-export .inv-page>tbody>tr>td{padding:0 38px}.print-sheet.pdf-export .inv-b{min-height:0}
 
-@page{size:A4 portrait;margin:10mm 11mm}
+@page{size:A4 portrait;margin:0}
+/* Page margins live inside the invoice (see trackerPrintInvoice). */
+.inv-page{width:100%;border-collapse:collapse}
+.inv-page>thead>tr>td,.inv-page>tfoot>tr>td{height:10mm;padding:0}
+.inv-page>tbody>tr>td{padding:0 11mm;vertical-align:top}
+.inv-page>thead{display:table-header-group}.inv-page>tfoot{display:table-footer-group}
+/* On a one-page invoice the totals sit at the bottom of the page. */
+.inv-b{display:flex;flex-direction:column;min-height:274mm}
+.inv-b .b-foot{margin-top:auto!important;padding-top:4mm}
 @media print{
   html,body{background:#fff!important}
   body>*:not(.print-sheet){display:none!important}

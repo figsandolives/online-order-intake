@@ -187,7 +187,11 @@ function invoiceItemRow(item, index) {
 }
 function trackerPrintInvoice(order) {
   const p = invParts(order);
-  return `<article class="inv inv-b">
+  // The invoice keeps its own page margins: a spacer row repeats at the top and
+  // bottom of every printed page, so it never touches the paper edge even when
+  // the print dialog's margins are set to "None".
+  return `<table class="inv-page"><thead><tr><td class="inv-space"></td></tr></thead><tfoot><tr><td class="inv-space"></td></tr></tfoot><tbody><tr><td>
+  <article class="inv inv-b">
     <header class="b-head"><div class="b-brand"><img src="${PRINT_LOGO_URL}" alt=""><div><strong>${p.brandAr}</strong><small>${p.brandEn}</small></div></div><div class="b-no"><small>فاتورة شراء</small><strong dir="ltr">${escapeHtml(order.orderId)}</strong><span>${dateText(order.createdAt)}</span></div></header>
     <section class="b-info">
       <div><label>العميل</label><b>${escapeHtml(order.customerName || "—")}</b><span dir="ltr">${escapeHtml(order.phone || "")}</span></div>
@@ -200,7 +204,7 @@ function trackerPrintInvoice(order) {
     ${invoicePreparationNotice(order)}
     <section class="b-foot"><div class="b-stamp"><strong>مدفوع</strong><span>PAID · ${escapeHtml(p.method)}</span></div><div class="b-totals"><div><span>قيمة المنتجات</span><b>${money(p.products)}</b></div><div class="b-grand"><span>الإجمالي</span><b>${money(order.total)}</b></div></div></section>
     <footer class="b-contact">حولي، شارع تونس، مجمع علي فهد الخالد، دور الميزانين · <span dir="ltr">66906605 · 22085888</span></footer>
-  </article>`;
+  </article></td></tr></tbody></table>`;
 }
 // Wait for the logo and product photos so they are not missing from the page.
 function invoiceImagesReady(root, timeout = 2500) {
