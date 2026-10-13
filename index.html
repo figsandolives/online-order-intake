@@ -8,18 +8,54 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260902-catalog-menu-v1">
+  <link rel="stylesheet" href="style.css?v=20261013-redesign-v1">
+  <link rel="stylesheet" href="print.css?v=20261013-redesign-v1">
 </head>
-<body>
-  <header class="topbar"><a class="brand" href="../منصة الطلبات/index.html"><img src="logo.png" alt="مخبز التين والزيتون"><span><b id="trackerBrand">مخبز التين والزيتون</b><small>متابعة طلبات الأونلاين</small></span></a><div style="display:flex;align-items:center;gap:10px"><button class="sound-button" id="enableSoundButton" type="button">تفعيل جرس الطلبات</button><div class="live-status"><i></i> تحديث مباشر</div></div><div class="catalog-menu"><button id="catalogMenuButton" class="catalog-menu-button" aria-label="اختيار المتجر" aria-expanded="false">⋮</button><div id="catalogMenu" class="catalog-menu-popover hidden"><button data-catalog="bakery">المخبز</button><button data-catalog="restaurant">المطعم</button></div></div></header>
+<body data-catalog="bakery">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="https://figsolives.online/">
+        <img src="logo.png" alt="">
+        <span><b id="trackerBrand">مخبز التين والزيتون</b><small>متابعة طلبات الأونلاين</small></span>
+      </a>
+      <nav class="catalog-switch" aria-label="اختيار القسم">
+        <button type="button" data-catalog="bakery" aria-pressed="true">المخبز <b id="bakeryNewCount" class="hidden">0</b></button>
+        <button type="button" data-catalog="restaurant" aria-pressed="false">المطعم <b id="restaurantNewCount" class="hidden">0</b></button>
+      </nav>
+      <div class="topbar-tools">
+        <span class="live-status" id="liveStatus"><i></i><span id="liveStatusText">جارٍ التحميل…</span></span>
+        <button class="bell-button" id="enableSoundButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a1.9 1.9 0 0 0 3.4 0"/></svg>
+          <span id="soundButtonText">تفعيل الجرس</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
   <main class="shell">
-    <section class="order-tabs" aria-label="حالة الطلبات"><button class="tab" data-tab="accepted"><span>الطلبات المقبولة</span><b id="acceptedCount">0</b></button><button class="tab active" data-tab="new"><span>طلبات جديدة</span><b id="newCount">0</b></button></section>
-    <section class="table-card"><div class="table-toolbar"><div><h2 id="tableTitle">الطلبات الجديدة</h2><small id="tableHint">طلبات تحتاج إلى قبول</small></div><label>عرض <select id="pageSize"><option value="10">10</option><option value="20">20</option><option value="50">50</option><option value="100">100</option></select> فاتورة</label></div><div class="table-wrap"><table><thead id="ordersHead"></thead><tbody id="ordersBody"></tbody></table></div><footer class="pagination"><button id="previousPage">السابق</button><span id="pageInfo">1 / 1</span><button id="nextPage">التالي</button></footer></section>
+    <div class="toolbar">
+      <div class="status-tabs" role="tablist" aria-label="حالة الطلبات">
+        <button class="tab" role="tab" data-tab="accepted">المقبولة <b id="acceptedCount">0</b></button>
+        <button class="tab active" role="tab" data-tab="new">طلبات جديدة <b id="newCount">0</b></button>
+      </div>
+      <label class="page-size">عرض
+        <select id="pageSize"><option value="12">12</option><option value="24">24</option><option value="48">48</option><option value="96">96</option></select>
+      </label>
+    </div>
+
+    <section class="orders-grid" id="ordersList" aria-live="polite"></section>
+
+    <footer class="pagination" id="pagination">
+      <button type="button" id="previousPage">السابق</button>
+      <span id="pageInfo">1 / 1</span>
+      <button type="button" id="nextPage">التالي</button>
+    </footer>
   </main>
+
   <dialog id="orderDialog"><article class="dialog-card"><button class="close" id="closeDialog" aria-label="إغلاق">×</button><div id="orderDetails"></div></article></dialog>
   <audio id="newOrderSound" src="doordash.mp3" preload="auto"></audio>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="script.js?v=20261009-vps-api-v1"></script>
+  <script src="script.js?v=20261013-redesign-v1"></script>
 </body>
 </html>

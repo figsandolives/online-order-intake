@@ -1,50 +1,138 @@
-:root{--green:#173f32;--green2:#2b6a4f;--gold:#dca83e;--cream:#f7f4ec;--ink:#182a22;--muted:#708078;--line:#dce3df;--danger:#c44444}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f7f4ec,#edf4ef);color:var(--ink);font-family:"Noto Kufi Arabic",Arial,sans-serif}button,select{font:inherit}.topbar{height:82px;padding:0 max(32px,calc((100vw - 1320px)/2));display:flex;align-items:center;justify-content:space-between;background:#fffdf9;border-bottom:1px solid var(--line);box-shadow:0 7px 22px #1537280b}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}.brand img{width:52px;height:52px;object-fit:contain}.brand span{display:grid;gap:2px}.brand b{font-size:16px}.brand small{font-size:10px;color:var(--muted)}.live-status{display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:#eaf5ed;color:var(--green2);font-size:11px;font-weight:800}.live-status i{width:9px;height:9px;border-radius:50%;background:#31a164;box-shadow:0 0 0 5px #31a16421}.shell{width:min(1320px,calc(100% - 48px));margin:42px auto 70px}.page-title{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:28px}.page-title span{font-size:11px;font-weight:800;color:var(--green2)}.page-title h1{font-size:clamp(28px,4vw,44px);line-height:1.25;margin:8px 0}.page-title p{margin:0;color:var(--muted);font-size:12px}.sound-button{border:1px solid #c9dfd0;background:#fff;color:var(--green);border-radius:13px;padding:13px 17px;font-weight:800;white-space:nowrap}.sound-button.active{background:var(--green);color:#fff}.order-tabs{display:flex;gap:11px;margin-bottom:18px}.tab{display:flex;align-items:center;justify-content:space-between;gap:34px;min-width:230px;padding:18px 20px;border:1px solid var(--line);border-radius:17px;background:#fff;color:var(--green);font-weight:900;text-align:right;transition:.18s}.tab:hover{transform:translateY(-2px)}.tab.active{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 13px 28px #173f3226}.tab b{display:grid;place-items:center;min-width:32px;height:32px;padding:0 8px;border-radius:9px;background:#edf3ef;color:var(--green);font-size:13px}.tab.active b{background:#fff;color:var(--green)}.table-card{overflow:hidden;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 18px 45px #193c2c10}.table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 24px;border-bottom:1px solid var(--line)}.table-toolbar h2{font-size:18px;margin:0 0 4px}.table-toolbar small{font-size:10px;color:var(--muted)}.table-toolbar label{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:800}.table-toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fbfcfb;color:var(--green);font-weight:800}.table-wrap{overflow:auto}table{width:100%;min-width:1080px;border-collapse:collapse}th{padding:14px 16px;background:#f7faf8;color:#62736b;font-size:10px;text-align:right;white-space:nowrap}td{padding:16px;border-top:1px solid #edf0ee;font-size:11px;vertical-align:middle}td strong{color:var(--green);font-size:12px}td small{display:block;margin-top:3px;color:var(--muted);font-size:9px}.invoice-number{direction:ltr;font-weight:900}.elapsed{display:inline-flex;min-width:88px;justify-content:center;padding:6px 8px;border-radius:9px;background:#fff4e3;color:#9d6812;font:800 10px ui-monospace,SFMono-Regular,Menlo,monospace;direction:ltr}.view-button,.accept-button,.print-button{border:0;border-radius:10px;padding:9px 12px;font-size:10px;font-weight:900}.view-button{background:#e9f1ec;color:var(--green)}.accept-button{background:var(--green);color:#fff}.print-button{background:#e2ae3a;color:#2a2518}.actions{display:flex;gap:6px;white-space:nowrap}.pagination{display:flex;align-items:center;justify-content:center;gap:12px;padding:16px;border-top:1px solid var(--line)}.pagination button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 13px;color:var(--green);font-size:10px;font-weight:800}.pagination button:disabled{opacity:.4}.pagination span{color:var(--muted);font-size:10px}.empty-row td{text-align:center;padding:50px;color:var(--muted)}dialog{width:min(920px,calc(100% - 32px));border:0;padding:0;background:transparent}dialog::backdrop{background:#0c241bb8;backdrop-filter:blur(5px)}.dialog-card{position:relative;max-height:90vh;overflow:auto;padding:30px;background:#fff;border-radius:24px;box-shadow:0 30px 80px #0004}.close{position:absolute;top:14px;left:14px;width:38px;height:38px;border:0;border-radius:50%;background:#edf2ef;color:var(--green);font-size:24px}.order-header{display:flex;justify-content:space-between;gap:20px;padding-left:40px}.order-header h2{margin:6px 0;font-size:26px;direction:ltr}.order-header small{color:var(--muted);font-size:10px}.order-status{height:max-content;padding:8px 12px;border-radius:999px;background:#e9f5ed;color:#227046;font-size:10px;font-weight:900}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}.detail-grid div{padding:13px;border:1px solid var(--line);border-radius:13px;background:#fbfcfb}.detail-grid span{display:block;margin-bottom:5px;color:var(--muted);font-size:9px}.detail-grid b{font-size:11px;overflow-wrap:anywhere}.items{width:100%;min-width:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}.items th{background:var(--green);color:#fff}.items th,.items td{padding:11px;font-size:10px}.items td small{direction:ltr}.total-box{width:min(300px,100%);margin:18px 0 0 auto;padding:16px;border-radius:14px;background:#f1f6f2}.total-box span,.total-box strong{display:flex;justify-content:space-between;gap:10px;font-size:10px;padding:6px 0}.total-box strong{border-top:1px dashed #bdcabf;color:var(--green);font-size:13px}.dialog-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}.dialog-actions button{min-width:150px;padding:13px}.print-sheet{display:none}@media(max-width:700px){.topbar{padding:0 16px}.shell{width:calc(100% - 28px);margin-top:25px}.page-title{align-items:start;flex-direction:column}.order-tabs{display:grid;grid-template-columns:1fr}.tab{min-width:0}.table-toolbar{align-items:start;flex-direction:column}.detail-grid{grid-template-columns:1fr}.dialog-card{padding:22px 16px}.brand b{font-size:13px}}
-@media print{body>*:not(.print-sheet){display:none!important}.print-sheet{display:block!important;font-family:"Noto Kufi Arabic",Arial,sans-serif;color:#17372b}.print-sheet .invoice{width:100%;padding:15mm}.print-sheet .invoice-head{display:flex;justify-content:space-between;gap:20px;padding-bottom:14px;border-bottom:2px solid #173f32}.print-sheet .invoice-brand{display:flex;align-items:center;gap:12px}.print-sheet img{width:62px;height:62px;object-fit:contain}.print-sheet h1{font-size:18px;margin:0}.print-sheet p{font-size:9px;margin:4px 0}.print-sheet .invoice-no{text-align:left}.print-sheet .invoice-no b{display:block;font-size:19px;direction:ltr;color:#1e684a}.print-sheet .company{width:45%;margin:14px 0 0 auto;padding:10px;border:1px solid #d5e3da;border-radius:10px;background:#f5faf7;font-size:8px;line-height:1.8}.print-sheet .parties{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.print-sheet .parties div{padding:11px;border:1px solid #dce4df;border-radius:10px;font-size:9px}.print-sheet .parties span{display:block;color:#77877e;font-size:8px}.print-sheet table{min-width:0;border:1px solid #dce4df;border-radius:10px;overflow:hidden}.print-sheet th{background:#173f32;color:#fff}.print-sheet th,.print-sheet td{padding:9px;font-size:8px}.print-sheet .grand{margin-top:14px;margin-right:auto;width:250px;padding:12px;background:#173f32;color:#fff;border-radius:10px;display:flex;justify-content:space-between;font-size:12px}}
-/* وضوح جدول المتابعة وصفحة الطلب */
-.table-wrap table{direction:ltr}.table-wrap th,.table-wrap td{text-align:center;border:1px solid #dbe3de}.table-wrap th{font-size:14px;color:#24483a;background:#edf4ef}.table-wrap td{font-size:14px;line-height:1.7}.table-wrap td strong{font-size:15px}.view-button{min-width:76px;font-size:13px}.table-card{border:2px solid #d5dfd8}.table-wrap{direction:ltr}.table-wrap td:nth-child(n+2),.table-wrap th:nth-child(n+2){direction:rtl}
-dialog{width:100%;height:100%;max-width:none;max-height:none;background:#fff}.dialog-card{min-height:100vh;max-height:none;border-radius:0;padding:48px max(28px,calc((100vw - 1180px)/2));box-shadow:none}.close{position:fixed;top:20px;left:24px;width:auto;height:auto;padding:10px 16px;border-radius:10px;font-size:14px}.close:after{content:" رجوع"}.order-header{padding-left:0;margin-bottom:26px}.detail-grid{grid-template-columns:1fr 1fr;gap:18px}.detail-grid div{padding:18px;border:2px solid #dce4df}.detail-grid span{font-size:12px}.detail-grid b{font-size:15px}.items{margin-top:20px}.items th,.items td{font-size:13px;padding:15px;border:1px solid #d7e0da}.dialog-actions{position:sticky;top:10px;z-index:3;justify-content:flex-start;margin:0 0 24px}.dialog-actions button{font-size:16px;min-width:190px}.items-invoice .company{display:none}
-@media(max-width:700px){.detail-grid{grid-template-columns:1fr}.dialog-card{padding:70px 16px 25px}.table-wrap th,.table-wrap td{font-size:12px;padding:13px 11px}.table-wrap table{min-width:980px}}
-.order-view-top{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #173f32}.order-view-top span{font-size:15px;color:#60746a;font-weight:800}.order-view-top h1{margin:5px 0;font-size:38px;direction:ltr}.order-view-top small{font-size:13px;color:#60746a}.order-view-top .dialog-actions{margin:0}.order-view-grid{display:grid;grid-template-columns:minmax(310px,.85fr) minmax(0,1.55fr);gap:24px;align-items:start}.order-info-card,.order-products-card{border:2px solid #dce4df;border-radius:18px;background:#fff;padding:24px}.order-info-card h2,.order-products-card h2{margin:0 0 20px;font-size:22px}.order-info-card dl{margin:0;display:grid;gap:0}.order-info-card dl>div{padding:13px 0;border-bottom:1px solid #dce4df}.order-info-card dt{font-size:12px;color:#65776e;font-weight:800;margin-bottom:5px}.order-info-card dd{margin:0;font-size:15px;font-weight:800;line-height:1.7;overflow-wrap:anywhere}.order-total{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding:16px;border-radius:12px;background:#173f32;color:#fff;font-size:17px;font-weight:900}.order-total strong{font-size:22px}.order-products-card .items{direction:rtl}.order-products-card .items th{background:#173f32;color:#fff;text-align:center}.order-products-card .items td{text-align:center;font-size:13px}.order-products-card .items td:nth-child(2){text-align:right}.order-products-card .items small{margin-top:6px;font-size:11px}.dialog-card:has(.order-view-grid) .order-header,.dialog-card:has(.order-view-grid) .detail-grid,.dialog-card:has(.order-view-grid) .items-invoice{display:none}@media(max-width:850px){.order-view-grid{grid-template-columns:1fr}.order-view-top{align-items:flex-start;flex-direction:column}.order-view-top .dialog-actions{width:100%}.order-view-top .dialog-actions button{width:100%}}
-
-/* لا توجد منطقة نصية فوق أزرار حالات الطلبات. */
-.shell{margin-top:28px}
-
-/* تحسين القراءة على الشاشات الكبيرة: تستفيد الصفحة من المساحة المتاحة
-   وتبقى الأعمدة قابلة للتمرير بدل ضغط الخط إلى حجم غير مقروء. */
-body{font-size:15px}
-.topbar{min-height:96px;height:auto;padding:18px max(32px,calc((100vw - 1760px)/2))}
-.brand{gap:16px}.brand img{width:66px;height:66px}.brand b{font-size:20px}.brand small{font-size:13px}
-.live-status{padding:11px 16px;font-size:14px}.live-status i{width:10px;height:10px}
-.shell{width:calc(100% - 48px);margin-top:38px}
-.table-card{min-height:calc(100vh - 250px);display:flex;flex-direction:column}.table-wrap{flex:1;min-height:0}
-.order-tabs{justify-content:flex-start;gap:14px;margin-bottom:24px}
-.tab{min-width:280px;padding:20px 24px;border-radius:18px;font-size:17px;gap:42px}
-.tab b{min-width:38px;height:38px;font-size:15px}
-.table-card{border-radius:24px}
-.table-toolbar{padding:28px 32px}.table-toolbar h2{font-size:24px;margin-bottom:6px}.table-toolbar small{font-size:13px}.table-toolbar label{font-size:14px}.table-toolbar select{padding:10px 13px;font-size:14px}
-table{min-width:1400px}th{padding:18px 20px;font-size:13px}td{padding:20px;font-size:14px}td strong{font-size:15px}td small{font-size:12px}.elapsed{min-width:106px;padding:8px 10px;font-size:13px}.view-button,.accept-button,.print-button{padding:11px 15px;font-size:13px;border-radius:11px}.actions{gap:8px}
-.pagination{padding:20px;gap:16px}.pagination button{padding:10px 16px;font-size:13px}.pagination span{font-size:13px}.empty-row td{padding:78px}
-
-@media(max-width:900px){
-  .topbar{padding:14px 20px}.brand img{width:54px;height:54px}.brand b{font-size:16px}.brand small{font-size:11px}.live-status{font-size:12px;padding:9px 12px}
-  .shell{width:calc(100% - 32px);margin-top:28px}.tab{min-width:0;flex:1;font-size:15px;padding:16px 18px}
-  .table-toolbar{padding:22px}.table-toolbar h2{font-size:20px}table{min-width:1150px}th{font-size:12px;padding:16px}td{font-size:13px;padding:16px}
+/* متابعة طلبات الأونلاين — تصميم الشاشة. قالب الفاتورة للطباعة في print.css */
+:root{
+  --accent:#1f5a43;--accent-strong:#173f32;--accent-soft:#e6f0ea;--accent-ink:#ffffff;
+  --bg:#f5f3ee;--surface:#ffffff;--ink:#1b2a23;--muted:#6b7a72;--line:#e3e6e1;
+  --warn:#b7791f;--warn-soft:#fdf3e1;--late:#c0392b;--late-soft:#fbeae8;
+  --radius:18px;--shadow:0 1px 2px rgba(23,42,34,.05),0 8px 24px rgba(23,42,34,.06)
 }
+/* جهاز مضبوط على المطعم يأخذ لوناً مختلفاً حتى لا يختلط القسمان. */
+body[data-catalog="restaurant"]{--accent:#a8322a;--accent-strong:#86241e;--accent-soft:#f8e7e5}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Kufi Arabic",system-ui,sans-serif}
+button,select{font:inherit;color:inherit}
+button:not(:disabled),label[for],select{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.6}
+.hidden{display:none!important}
 
-/* قالب A4 موحد: أبيض وأسود للموظف والعميل */
-.print-sheet .a4-invoice{width:210mm;min-height:297mm;padding:16mm;background:#fff;color:#000;font-family:"Noto Kufi Arabic",Arial,sans-serif;direction:rtl}.print-sheet .a4-head{display:flex;align-items:center;gap:16px;padding-bottom:13px;border-bottom:3px solid #000}.print-sheet .a4-head img{width:62px;height:62px;object-fit:contain}.print-sheet .a4-head h1{margin:0;font-size:26px;line-height:1.2}.print-sheet .a4-head p{margin:4px 0 0;font:700 11px Arial,sans-serif;letter-spacing:.08em}.print-sheet .a4-meta{display:grid;grid-template-columns:1fr 1.3fr;gap:16px;margin:17px 0;padding:13px;border:2px solid #000}.print-sheet .a4-meta>div:first-child{display:grid;grid-template-columns:1fr auto;gap:7px 18px;align-content:start;font-size:12px}.print-sheet .a4-meta strong{direction:ltr;text-align:left}.print-sheet .a4-company{font-size:11px;line-height:1.9;border-inline-start:1px solid #000;padding-inline-start:16px}.print-sheet .a4-parties{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:15px 0}.print-sheet .a4-parties>div{border:1.5px solid #000;padding:12px;min-height:84px;display:grid;align-content:start;gap:5px}.print-sheet .a4-parties span{font-size:10px}.print-sheet .a4-parties b{font-size:14px}.print-sheet .a4-parties small{font-size:10px}.print-sheet .a4-items{width:100%;min-width:0;border-collapse:collapse;margin-top:19px}.print-sheet .a4-items th,.print-sheet .a4-items td{border:1px solid #000;padding:10px 8px;font-size:11px;text-align:center;vertical-align:middle}.print-sheet .a4-items th{background:#fff;color:#000;font-weight:900}.print-sheet .a4-items td:nth-child(2){text-align:right}.print-sheet .a4-items td small{display:block;margin-top:4px;font:10px Arial,sans-serif}.print-sheet .a4-total{margin-top:15px;margin-inline-start:auto;width:275px;background:#000;color:#fff;padding:13px 16px;display:flex;justify-content:space-between;font-size:15px;font-weight:900}.print-sheet .a4-total strong{font-size:18px;direction:ltr}@media print{.print-sheet .a4-invoice{width:210mm!important;min-height:297mm!important;padding:16mm!important}}
-.print-sheet .a4-head{justify-content:flex-start;gap:12px;padding-bottom:16px}.print-sheet .a4-head img{width:72px;height:72px}.print-sheet .a4-head>div{display:grid;gap:1px}.print-sheet .a4-head>div:before{content:"مخبز التين والزيتون";font-size:17px;font-weight:900}.print-sheet .a4-head h1{font-size:23px}.print-sheet .a4-head p{font-size:10px}.print-sheet .a4-items{table-layout:fixed}.print-sheet .a4-items th:nth-child(1),.print-sheet .a4-items td:nth-child(1){width:5%}.print-sheet .a4-items th:nth-child(2),.print-sheet .a4-items td:nth-child(2){width:39%}.print-sheet .a4-items th:nth-child(3),.print-sheet .a4-items td:nth-child(3){width:18%}.print-sheet .a4-items th:nth-child(4),.print-sheet .a4-items td:nth-child(4){width:9%}.print-sheet .a4-items th:nth-child(5),.print-sheet .a4-items td:nth-child(5),.print-sheet .a4-items th:nth-child(6),.print-sheet .a4-items td:nth-child(6){width:14.5%}.print-sheet .a4-items td:nth-child(2){overflow-wrap:anywhere;line-height:1.7}.print-sheet .a4-items th,.print-sheet .a4-items td{padding:12px 9px;font-size:12px}.print-sheet .a4-meta{background:#f7f7f7;padding:15px}.print-sheet .a4-parties>div{padding:14px}
-.print-sheet .a4-phone{font-size:13px!important;font-weight:900!important;direction:ltr}.print-sheet .a4-time{line-height:1.8!important}.print-sheet .a4-paid{width:275px;margin:9px 0 0 auto;padding:11px 14px;border:2px solid #000;font-size:13px;font-weight:900;text-align:center}
-.print-sheet{min-height:297mm;display:flex;align-items:center;justify-content:center}.print-sheet .a4-invoice{min-height:0!important}.print-sheet .a4-head{position:relative;justify-content:flex-start!important}.print-sheet .a4-head>div:before{font-size:19px!important}.print-sheet .a4-head h1{position:absolute;left:0;top:9px;font-size:22px!important}.print-sheet .a4-head p{position:absolute;left:0;top:38px}.print-sheet .a4-phone{width:100%;text-align:right;justify-self:stretch;direction:ltr;font-family:Arial,sans-serif}.print-sheet .a4-paid{margin:9px auto 0 0!important}.print-sheet .a4-total{margin-inline-start:auto}@media print{.print-sheet{width:210mm;min-height:297mm;margin:0;display:flex!important;align-items:center!important;justify-content:center!important}}
-.print-sheet{display:block!important;min-height:0!important}.print-sheet .a4-invoice{width:190mm!important;margin:10mm auto!important}@media print{.print-sheet{width:210mm!important;min-height:297mm!important;display:block!important}.print-sheet .a4-invoice{width:190mm!important;margin:10mm auto!important}.print-sheet .a4-items{border:2px solid #000!important;border-collapse:collapse!important}.print-sheet .a4-items th,.print-sheet .a4-items td{border:1px solid #000!important}.print-sheet .a4-total{background:#000!important;color:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.print-sheet .a4-paid{border:2px solid #000!important}}
-/* Chrome's print preview can drop collapsed-table rules. Keep every grid line
-   as its own printed border and never vertically centre the invoice. */
-@media print{@page{size:A4 portrait;margin:0}.print-sheet{width:210mm!important;min-height:0!important;margin:0!important;padding:0!important;display:block!important}.print-sheet .a4-invoice{width:190mm!important;min-height:0!important;margin:10mm auto!important}.print-sheet .a4-items{border-collapse:separate!important;border-spacing:0!important;border:2px solid #000!important;outline:1px solid #000!important;outline-offset:-1px!important}.print-sheet .a4-items th,.print-sheet .a4-items td{border:1px solid #000!important;box-shadow:inset 0 0 0 .25px #000!important}.print-sheet .a4-total{background:#000!important;color:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
-.order-actions{display:grid;justify-items:center;gap:6px}.transfer-menu{position:relative;display:inline-flex}.transfer-icon,.transfer-button,.cancel-transfer-button{border:0;border-radius:10px;padding:9px 12px;font-size:10px;font-weight:900}.transfer-icon{display:grid;place-items:center;width:34px;height:34px;padding:8px;background:#edf3ef;color:var(--green);line-height:1}.transfer-icon svg{width:17px;height:17px;fill:currentColor}.transfer-popover{position:absolute;z-index:20;top:calc(100% + 7px);inset-inline-end:0;width:max-content;padding:7px;background:#fff;border:1px solid #dce3df;border-radius:12px;box-shadow:0 12px 28px #173f3230}.transfer-button{background:#246c4d;color:#fff;white-space:nowrap}.cancel-transfer-button{background:#fff1f1;color:#ae3f3f;border:1px solid #efcaca}.transfer-status{color:#19884b;font-size:10px;font-weight:900;white-space:normal;line-height:1.7}.pdf-export{position:fixed;z-index:-1;inset:0 auto auto -10000px;width:794px;background:#fff}.pdf-export .a4-invoice{width:794px;padding:55px;background:#fff;color:#000}
-@media print{.print-sheet .a4-items{border-collapse:separate!important;border-spacing:0!important;border:1.25px solid #555!important;outline:0!important;background:#fff!important}.print-sheet .a4-items th,.print-sheet .a4-items td{border:0!important;border-inline-start:1.25px solid #555!important;border-bottom:1.25px solid #555!important;box-shadow:none!important}.print-sheet .a4-items th:first-child,.print-sheet .a4-items td:first-child{border-inline-start:0!important}.print-sheet .a4-items tbody tr:last-child td{border-bottom:0!important}}
-.print-sheet .a4-meta{margin:12px 0;padding:10px}.print-sheet .a4-company{line-height:1.65}.print-sheet .a4-customer-line{margin:0 0 12px;padding:10px 12px;border-bottom:1.5px solid #000;font-size:12px;font-weight:800}.print-sheet .a4-customer-line i{font-style:normal;margin:0 7px}.print-sheet .a4-summary-row{display:flex;align-items:stretch;justify-content:space-between;gap:14px;margin-top:15px}.print-sheet .a4-summary-row .a4-total{margin:0}.print-sheet .a4-delivery-time{display:grid;align-content:center;gap:4px;flex:1;padding:9px 12px;border:1.5px solid #000;font-size:11px}.print-sheet .a4-delivery-time small{font-size:9px}.print-sheet .a4-delivery-time b{line-height:1.7}.print-sheet .a4-paid{margin-top:9px!important}
-.print-sheet .a4-total{display:grid;gap:0;width:275px;padding:0}.print-sheet .a4-total span,.print-sheet .a4-total strong{display:flex;justify-content:space-between;gap:12px;padding:8px 12px;font-size:10px}.print-sheet .a4-total span{background:#fff;color:#000;border:1px solid #000;border-bottom:0}.print-sheet .a4-total strong{padding:11px 12px;font-size:14px}.print-sheet .a4-total b{direction:ltr}
-.print-sheet .a4-preparation-notice{margin:13px 0 0;padding:10px 12px;border:1.5px solid #c73333;background:#fff5f5;color:#b61f1f;font-size:10px;font-weight:900;line-height:1.9}
-button:not(:disabled),[role="button"],a[href],label[for]{cursor:pointer}button:disabled{cursor:not-allowed}
-.catalog-menu{position:absolute;left:max(18px,calc((100vw - 1320px)/2));top:20px;z-index:20}.catalog-menu-button{width:42px;height:42px;border:1px solid #cfe0d5;border-radius:13px;background:#fff;color:var(--green);font-size:28px;line-height:1}.catalog-menu-popover{position:absolute;left:0;top:calc(100% + 8px);display:grid;min-width:145px;padding:7px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 16px 34px #15372824}.catalog-menu-popover button{border:0;border-radius:9px;padding:10px;background:transparent;color:var(--ink);font-weight:900;text-align:right}.catalog-menu-popover button:hover{background:#eaf5ed;color:var(--green)}.hidden{display:none!important}@media(max-width:700px){.catalog-menu{left:16px;top:13px}.catalog-menu-button{width:38px;height:38px}}
-.print-sheet .a4-total{background:#f6faf7!important;border:1px solid #d7e5dc!important;border-radius:12px!important;color:#18352a!important;padding:5px 13px!important}.print-sheet .a4-total span{background:transparent!important;color:#708078!important;border:0!important;border-bottom:1px solid #e2ece5!important}.print-sheet .a4-total strong{background:#e5f1e9!important;color:#194433!important;border-radius:8px!important;margin:5px 0!important;padding:10px 11px!important}@media print{.print-sheet .a4-total{background:#f6faf7!important;color:#18352a!important;border:1px solid #d7e5dc!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.print-sheet .a4-total span{background:transparent!important;color:#708078!important;border:0!important;border-bottom:1px solid #e2ece5!important}.print-sheet .a4-total strong{background:#e5f1e9!important;color:#194433!important}}
+/* الشريط العلوي */
+.topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-inner{display:flex;align-items:center;gap:20px;max-width:1600px;margin:0 auto;padding:14px 28px}
+.brand{display:flex;align-items:center;gap:12px;color:inherit;text-decoration:none;min-width:0}
+.brand img{width:46px;height:46px;border-radius:12px;object-fit:contain;background:#fff;border:1px solid var(--line)}
+.brand span{display:grid;line-height:1.35;min-width:0}
+.brand b{font-size:17px;font-weight:800;color:var(--accent-strong);white-space:nowrap}
+.brand small{font-size:12px;color:var(--muted)}
+
+.catalog-switch{display:flex;gap:4px;padding:4px;margin-inline:auto;background:#eef0ec;border-radius:14px}
+.catalog-switch button{display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:9px 22px;border-radius:10px;font-weight:700;color:var(--muted);transition:background .15s,color .15s}
+.catalog-switch button[aria-pressed="true"]{background:var(--surface);color:var(--accent-strong);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.catalog-switch button[data-catalog="restaurant"][aria-pressed="true"]{color:#86241e}
+.catalog-switch b{min-width:22px;height:22px;padding:0 6px;border-radius:11px;display:inline-grid;place-items:center;font-size:12px;background:#d93a2b;color:#fff}
+
+.topbar-tools{display:flex;align-items:center;gap:12px}
+.live-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);white-space:nowrap}
+.live-status i{width:8px;height:8px;border-radius:50%;background:#2fa36b;box-shadow:0 0 0 4px rgba(47,163,107,.15)}
+.live-status.offline i{background:var(--late);box-shadow:0 0 0 4px rgba(192,57,43,.15)}
+.live-status.offline{color:var(--late)}
+.bell-button{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:9px 16px;border-radius:12px;font-size:13px;font-weight:700;color:var(--muted)}
+.bell-button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bell-button.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.bell-button.ringing svg{animation:ring 1s ease-in-out infinite;transform-origin:50% 10%}
+@keyframes ring{0%,100%{transform:rotate(0)}20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+
+/* شريط الحالة */
+.shell{max-width:1600px;margin:0 auto;padding:26px 28px 40px}
+.toolbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.status-tabs{display:flex;gap:8px}
+.tab{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);padding:10px 18px;border-radius:999px;font-weight:700;color:var(--muted)}
+.tab b{min-width:26px;height:26px;padding:0 8px;border-radius:13px;display:inline-grid;place-items:center;font-size:12px;background:#eef0ec;color:var(--ink)}
+.tab.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tab.active b{background:rgba(255,255,255,.2);color:#fff}
+.page-size{margin-inline-start:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.page-size select{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px}
+
+/* بطاقات الطلبات */
+.orders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+.order-card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.order-card.is-new{border-top:4px solid var(--accent)}
+.order-card.is-late{border-top-color:var(--late)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px 0}
+.invoice-number{font-size:18px;font-weight:900;letter-spacing:.5px;color:var(--accent-strong);direction:ltr}
+.elapsed{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:800;direction:ltr;font-variant-numeric:tabular-nums;background:var(--accent-soft);color:var(--accent-strong)}
+.elapsed.warn{background:var(--warn-soft);color:var(--warn)}
+.elapsed.late{background:var(--late-soft);color:var(--late)}
+.accepted-chip{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;background:#e7f4ec;color:#1f7a4c}
+.card-customer{padding:10px 18px 0}
+.card-customer strong{display:block;font-size:16px;font-weight:800;line-height:1.5}
+.card-customer a{font-size:13px;color:var(--muted);text-decoration:none;direction:ltr;display:inline-block}
+.card-facts{list-style:none;margin:12px 18px 0;padding:12px 0 0;border-top:1px dashed var(--line);display:grid;gap:7px;font-size:13px}
+.card-facts li{display:flex;gap:10px;align-items:flex-start}
+.card-facts svg{flex:none;width:16px;height:16px;margin-top:3px;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card-facts .scheduled{font-weight:800;color:var(--warn)}
+.card-foot{display:flex;align-items:center;gap:10px;margin-top:auto;padding:14px 18px;margin-top:14px;background:#fafaf8;border-top:1px solid var(--line)}
+.card-total{font-size:17px;font-weight:900;margin-inline-end:auto}
+.view-button{border:0;background:var(--accent);color:var(--accent-ink);padding:9px 18px;border-radius:11px;font-weight:800;font-size:13px}
+.view-button:hover{background:var(--accent-strong)}
+
+/* التحويل إلى فرع اليرموك */
+.transfer-menu{position:relative;display:inline-flex}
+.transfer-icon{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);border-radius:11px}
+.transfer-icon svg{width:17px;height:17px;fill:var(--muted)}
+.transfer-popover{position:absolute;bottom:calc(100% + 8px);left:0;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;white-space:nowrap}
+.transfer-button{border:0;background:transparent;padding:9px 14px;border-radius:9px;font-weight:700;font-size:13px}
+.transfer-button:hover{background:var(--accent-soft)}
+.transfer-status{font-size:12px;font-weight:800;color:#1f7a4c;background:#e7f4ec;padding:5px 10px;border-radius:999px}
+.cancel-transfer-button{border:0;background:transparent;color:var(--late);font-size:12px;font-weight:700;text-decoration:underline;padding:0}
+.transfer-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 18px 14px;background:#fafaf8}
+
+/* الحالات الفارغة والترقيم */
+.empty-state{grid-column:1/-1;display:grid;justify-items:center;gap:10px;padding:80px 20px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius)}
+.empty-state svg{width:44px;height:44px;fill:none;stroke:#b9c3bd;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.empty-state strong{font-size:16px;color:var(--ink)}
+.pagination{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:24px;font-size:13px;color:var(--muted)}
+.pagination button{border:1px solid var(--line);background:var(--surface);padding:8px 16px;border-radius:10px;font-weight:700}
+
+/* نافذة تفاصيل الطلب */
+dialog{width:min(1040px,calc(100% - 32px));max-height:calc(100vh - 48px);padding:0;border:0;border-radius:22px;background:var(--surface);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(20,30,25,.45);backdrop-filter:blur(2px)}
+.dialog-card{position:relative;padding:28px 30px 30px}
+.close{position:absolute;top:18px;left:18px;width:38px;height:38px;border:0;border-radius:50%;background:#f0f2ef;font-size:22px;line-height:1}
+.order-view-top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:0 0 18px 56px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.order-view-top span{font-size:12px;color:var(--muted);font-weight:700}
+.order-view-top h1{margin:2px 0;font-size:28px;font-weight:900;color:var(--accent-strong);direction:ltr;text-align:right}
+.order-view-top small{color:var(--muted);font-size:12px}
+.accept-button,.print-button{border:0;padding:12px 26px;border-radius:13px;font-weight:800;font-size:15px;background:var(--accent);color:var(--accent-ink)}
+.accept-button:hover,.print-button:hover{background:var(--accent-strong)}
+.order-view-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start}
+.order-info-card,.order-products-card{border:1px solid var(--line);border-radius:16px;padding:18px}
+.order-info-card h2,.order-products-card h2{margin:0 0 12px;font-size:14px;color:var(--muted)}
+.order-info-card dl{margin:0;display:grid;gap:12px}
+.order-info-card dt{font-size:11px;color:var(--muted)}
+.order-info-card dd{margin:0;font-weight:700;font-size:14px}
+.order-total{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--accent-soft);font-weight:700}
+.order-total strong{font-size:18px;color:var(--accent-strong)}
+.order-products-card{overflow-x:auto}
+.items{width:100%;border-collapse:collapse;font-size:13px}
+.items th{text-align:right;font-size:11px;color:var(--muted);font-weight:700;padding:0 10px 10px;border-bottom:1px solid var(--line)}
+.items td{padding:12px 10px;border-bottom:1px solid #f0f2ef;vertical-align:top}
+.items tr:last-child td{border-bottom:0}
+.items td small{display:block;color:var(--muted);font-size:11px}
+
+@media (max-width:900px){
+  .topbar-inner{flex-wrap:wrap;gap:12px;padding:12px 16px}
+  .catalog-switch{order:3;width:100%;margin:0}
+  .catalog-switch button{flex:1;justify-content:center}
+  .topbar-tools{margin-inline-start:auto}
+  .live-status span{display:none}
+  .shell{padding:18px 16px 32px}
+  .order-view-grid{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .brand small{display:none}
+  .bell-button span{display:none}
+  .orders-grid{grid-template-columns:1fr}
+  .page-size{display:none}
+  .dialog-card{padding:22px 16px}
+  .order-view-top{flex-direction:column;align-items:stretch;padding-left:0}
+}

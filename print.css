@@ -1,0 +1,81 @@
+/* قالب الفاتورة للطباعة وملف PDF — منقول كما هو من التصميم السابق. */
+.print-sheet{display:none}
+@media print{body>*:not(.print-sheet){display:none!important}.print-sheet{display:block!important;font-family:"Noto Kufi Arabic",Arial,sans-serif;color:#17372b}.print-sheet .invoice{width:100%;padding:15mm}.print-sheet .invoice-head{display:flex;justify-content:space-between;gap:20px;padding-bottom:14px;border-bottom:2px solid #173f32}.print-sheet .invoice-brand{display:flex;align-items:center;gap:12px}.print-sheet img{width:62px;height:62px;object-fit:contain}.print-sheet h1{font-size:18px;margin:0}.print-sheet p{font-size:9px;margin:4px 0}.print-sheet .invoice-no{text-align:left}.print-sheet .invoice-no b{display:block;font-size:19px;direction:ltr;color:#1e684a}.print-sheet .company{width:45%;margin:14px 0 0 auto;padding:10px;border:1px solid #d5e3da;border-radius:10px;background:#f5faf7;font-size:8px;line-height:1.8}.print-sheet .parties{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.print-sheet .parties div{padding:11px;border:1px solid #dce4df;border-radius:10px;font-size:9px}.print-sheet .parties span{display:block;color:#77877e;font-size:8px}.print-sheet table{min-width:0;border:1px solid #dce4df;border-radius:10px;overflow:hidden}.print-sheet th{background:#173f32;color:#fff}.print-sheet th,.print-sheet td{padding:9px;font-size:8px}.print-sheet .grand{margin-top:14px;margin-right:auto;width:250px;padding:12px;background:#173f32;color:#fff;border-radius:10px;display:flex;justify-content:space-between;font-size:12px}}
+.print-sheet .a4-invoice{width:210mm;min-height:297mm;padding:16mm;background:#fff;color:#000;font-family:"Noto Kufi Arabic",Arial,sans-serif;direction:rtl}
+.print-sheet .a4-head{display:flex;align-items:center;gap:16px;padding-bottom:13px;border-bottom:3px solid #000}
+.print-sheet .a4-head img{width:62px;height:62px;object-fit:contain}
+.print-sheet .a4-head h1{margin:0;font-size:26px;line-height:1.2}
+.print-sheet .a4-head p{margin:4px 0 0;font:700 11px Arial,sans-serif;letter-spacing:.08em}
+.print-sheet .a4-meta{display:grid;grid-template-columns:1fr 1.3fr;gap:16px;margin:17px 0;padding:13px;border:2px solid #000}
+.print-sheet .a4-meta>div:first-child{display:grid;grid-template-columns:1fr auto;gap:7px 18px;align-content:start;font-size:12px}
+.print-sheet .a4-meta strong{direction:ltr;text-align:left}
+.print-sheet .a4-company{font-size:11px;line-height:1.9;border-inline-start:1px solid #000;padding-inline-start:16px}
+.print-sheet .a4-parties{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:15px 0}
+.print-sheet .a4-parties>div{border:1.5px solid #000;padding:12px;min-height:84px;display:grid;align-content:start;gap:5px}
+.print-sheet .a4-parties span{font-size:10px}
+.print-sheet .a4-parties b{font-size:14px}
+.print-sheet .a4-parties small{font-size:10px}
+.print-sheet .a4-items{width:100%;min-width:0;border-collapse:collapse;margin-top:19px}
+.print-sheet .a4-items th,.print-sheet .a4-items td{border:1px solid #000;padding:10px 8px;font-size:11px;text-align:center;vertical-align:middle}
+.print-sheet .a4-items th{background:#fff;color:#000;font-weight:900}
+.print-sheet .a4-items td:nth-child(2){text-align:right}
+.print-sheet .a4-items td small{display:block;margin-top:4px;font:10px Arial,sans-serif}
+.print-sheet .a4-total{margin-top:15px;margin-inline-start:auto;width:275px;background:#000;color:#fff;padding:13px 16px;display:flex;justify-content:space-between;font-size:15px;font-weight:900}
+.print-sheet .a4-total strong{font-size:18px;direction:ltr}
+@media print{.print-sheet .a4-invoice{width:210mm!important;min-height:297mm!important;padding:16mm!important}}
+.print-sheet .a4-head{justify-content:flex-start;gap:12px;padding-bottom:16px}
+.print-sheet .a4-head img{width:72px;height:72px}
+.print-sheet .a4-head>div{display:grid;gap:1px}
+.print-sheet .a4-head>div:before{content:"مخبز التين والزيتون";font-size:17px;font-weight:900}
+.print-sheet .a4-head h1{font-size:23px}
+.print-sheet .a4-head p{font-size:10px}
+.print-sheet .a4-items{table-layout:fixed}
+.print-sheet .a4-items th:nth-child(1),.print-sheet .a4-items td:nth-child(1){width:5%}
+.print-sheet .a4-items th:nth-child(2),.print-sheet .a4-items td:nth-child(2){width:39%}
+.print-sheet .a4-items th:nth-child(3),.print-sheet .a4-items td:nth-child(3){width:18%}
+.print-sheet .a4-items th:nth-child(4),.print-sheet .a4-items td:nth-child(4){width:9%}
+.print-sheet .a4-items th:nth-child(5),.print-sheet .a4-items td:nth-child(5),.print-sheet .a4-items th:nth-child(6),.print-sheet .a4-items td:nth-child(6){width:14.5%}
+.print-sheet .a4-items td:nth-child(2){overflow-wrap:anywhere;line-height:1.7}
+.print-sheet .a4-items th,.print-sheet .a4-items td{padding:12px 9px;font-size:12px}
+.print-sheet .a4-meta{background:#f7f7f7;padding:15px}
+.print-sheet .a4-parties>div{padding:14px}
+.print-sheet .a4-phone{font-size:13px!important;font-weight:900!important;direction:ltr}
+.print-sheet .a4-time{line-height:1.8!important}
+.print-sheet .a4-paid{width:275px;margin:9px 0 0 auto;padding:11px 14px;border:2px solid #000;font-size:13px;font-weight:900;text-align:center}
+.print-sheet{min-height:297mm;display:flex;align-items:center;justify-content:center}
+.print-sheet .a4-invoice{min-height:0!important}
+.print-sheet .a4-head{position:relative;justify-content:flex-start!important}
+.print-sheet .a4-head>div:before{font-size:19px!important}
+.print-sheet .a4-head h1{position:absolute;left:0;top:9px;font-size:22px!important}
+.print-sheet .a4-head p{position:absolute;left:0;top:38px}
+.print-sheet .a4-phone{width:100%;text-align:right;justify-self:stretch;direction:ltr;font-family:Arial,sans-serif}
+.print-sheet .a4-paid{margin:9px auto 0 0!important}
+.print-sheet .a4-total{margin-inline-start:auto}
+@media print{.print-sheet{width:210mm;min-height:297mm;margin:0;display:flex!important;align-items:center!important;justify-content:center!important}}
+.print-sheet{display:block!important;min-height:0!important}
+.print-sheet .a4-invoice{width:190mm!important;margin:10mm auto!important}
+@media print{.print-sheet{width:210mm!important;min-height:297mm!important;display:block!important}.print-sheet .a4-invoice{width:190mm!important;margin:10mm auto!important}.print-sheet .a4-items{border:2px solid #000!important;border-collapse:collapse!important}.print-sheet .a4-items th,.print-sheet .a4-items td{border:1px solid #000!important}.print-sheet .a4-total{background:#000!important;color:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.print-sheet .a4-paid{border:2px solid #000!important}}
+@media print{@page{size:A4 portrait;margin:0}.print-sheet{width:210mm!important;min-height:0!important;margin:0!important;padding:0!important;display:block!important}.print-sheet .a4-invoice{width:190mm!important;min-height:0!important;margin:10mm auto!important}.print-sheet .a4-items{border-collapse:separate!important;border-spacing:0!important;border:2px solid #000!important;outline:1px solid #000!important;outline-offset:-1px!important}.print-sheet .a4-items th,.print-sheet .a4-items td{border:1px solid #000!important;box-shadow:inset 0 0 0 .25px #000!important}.print-sheet .a4-total{background:#000!important;color:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+.pdf-export{position:fixed;z-index:-1;inset:0 auto auto -10000px;width:794px;background:#fff}
+.pdf-export .a4-invoice{width:794px;padding:55px;background:#fff;color:#000}
+@media print{.print-sheet .a4-items{border-collapse:separate!important;border-spacing:0!important;border:1.25px solid #555!important;outline:0!important;background:#fff!important}.print-sheet .a4-items th,.print-sheet .a4-items td{border:0!important;border-inline-start:1.25px solid #555!important;border-bottom:1.25px solid #555!important;box-shadow:none!important}.print-sheet .a4-items th:first-child,.print-sheet .a4-items td:first-child{border-inline-start:0!important}.print-sheet .a4-items tbody tr:last-child td{border-bottom:0!important}}
+.print-sheet .a4-meta{margin:12px 0;padding:10px}
+.print-sheet .a4-company{line-height:1.65}
+.print-sheet .a4-customer-line{margin:0 0 12px;padding:10px 12px;border-bottom:1.5px solid #000;font-size:12px;font-weight:800}
+.print-sheet .a4-customer-line i{font-style:normal;margin:0 7px}
+.print-sheet .a4-summary-row{display:flex;align-items:stretch;justify-content:space-between;gap:14px;margin-top:15px}
+.print-sheet .a4-summary-row .a4-total{margin:0}
+.print-sheet .a4-delivery-time{display:grid;align-content:center;gap:4px;flex:1;padding:9px 12px;border:1.5px solid #000;font-size:11px}
+.print-sheet .a4-delivery-time small{font-size:9px}
+.print-sheet .a4-delivery-time b{line-height:1.7}
+.print-sheet .a4-paid{margin-top:9px!important}
+.print-sheet .a4-total{display:grid;gap:0;width:275px;padding:0}
+.print-sheet .a4-total span,.print-sheet .a4-total strong{display:flex;justify-content:space-between;gap:12px;padding:8px 12px;font-size:10px}
+.print-sheet .a4-total span{background:#fff;color:#000;border:1px solid #000;border-bottom:0}
+.print-sheet .a4-total strong{padding:11px 12px;font-size:14px}
+.print-sheet .a4-total b{direction:ltr}
+.print-sheet .a4-preparation-notice{margin:13px 0 0;padding:10px 12px;border:1.5px solid #c73333;background:#fff5f5;color:#b61f1f;font-size:10px;font-weight:900;line-height:1.9}
+.print-sheet .a4-total{background:#f6faf7!important;border:1px solid #d7e5dc!important;border-radius:12px!important;color:#18352a!important;padding:5px 13px!important}
+.print-sheet .a4-total span{background:transparent!important;color:#708078!important;border:0!important;border-bottom:1px solid #e2ece5!important}
+.print-sheet .a4-total strong{background:#e5f1e9!important;color:#194433!important;border-radius:8px!important;margin:5px 0!important;padding:10px 11px!important}
+@media print{.print-sheet .a4-total{background:#f6faf7!important;color:#18352a!important;border:1px solid #d7e5dc!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.print-sheet .a4-total span{background:transparent!important;color:#708078!important;border:0!important;border-bottom:1px solid #e2ece5!important}.print-sheet .a4-total strong{background:#e5f1e9!important;color:#194433!important}}
