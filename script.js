@@ -279,6 +279,16 @@ updateSoundButton();
 document.querySelectorAll("[data-tab]").forEach(button=>button.onclick=()=>{activeTab=button.dataset.tab; page=1; document.querySelectorAll("[data-tab]").forEach(tab=>tab.classList.toggle("active",tab===button)); render();});
 function selectCatalog(catalog) { activeCatalog = catalog === "restaurant" ? "restaurant" : "bakery"; localStorage.setItem("figsOlivesTrackerCatalog", activeCatalog); page = 1; document.body.dataset.catalog = activeCatalog; document.querySelectorAll(".catalog-switch [data-catalog]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.catalog === activeCatalog))); document.title = `متابعة طلبات الأونلاين | ${activeCatalog === "restaurant" ? "مطعم التين الطبيعي" : "مخبز التين والزيتون"}`; render(); setSound(); }
 document.querySelectorAll(".catalog-switch [data-catalog]").forEach(button=>button.onclick=()=>selectCatalog(button.dataset.catalog));
+// The bakery/restaurant choice is hidden; five quick taps anywhere show it,
+// and the hide button tucks it away again once the device is set.
+let revealTaps = [];
+document.addEventListener("pointerdown", event => {
+  if (!$("#catalogSwitch").classList.contains("hidden")) return;
+  const now = Date.now();
+  revealTaps = [...revealTaps.filter(time => now - time < 1500), now];
+  if (revealTaps.length >= 5) { revealTaps = []; $("#catalogSwitch").classList.remove("hidden"); }
+});
+$("#hideCatalogSwitch").onclick = () => $("#catalogSwitch").classList.add("hidden");
 $("#pageSize").onchange=event=>{pageSize=Number(event.target.value);page=1;render();}; $("#previousPage").onclick=()=>{page--;render();}; $("#nextPage").onclick=()=>{page++;render();}; $("#closeDialog").onclick=()=>$("#orderDialog").close(); $("#orderDialog").onclick=event=>{if(event.target===$("#orderDialog")) $("#orderDialog").close();};
 document.addEventListener("click",event=>{const view=event.target.closest("[data-view]"),accept=event.target.closest("[data-accept]"),print=event.target.closest("[data-print]"),transferMenu=event.target.closest("[data-transfer-menu]"),transfer=event.target.closest("[data-transfer]"),cancelTransfer=event.target.closest("[data-cancel-transfer]");if(view){const order=orders.find(item=>item.orderId===view.dataset.view);if(order)showOrder(order);}if(accept)acceptOrder(accept.dataset.accept);if(print){const order=orders.find(item=>item.orderId===print.dataset.print);if(order)printOrder(order);}if(transferMenu){const menu=transferMenu.closest(".transfer-menu");const open=menu.querySelector(".transfer-popover");document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(!open)menu.insertAdjacentHTML("beforeend",`<div class="transfer-popover"><button class="transfer-button" data-transfer="${escapeHtml(transferMenu.dataset.transferMenu)}">تحويل إلى اليرموك</button></div>`);}else if(!transfer&&!event.target.closest(".transfer-popover"))document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(transfer)transferToYarmouk(transfer.dataset.transfer,transfer);if(cancelTransfer)cancelYarmoukTransfer(cancelTransfer.dataset.cancelTransfer,cancelTransfer);});
 refreshOrders();
