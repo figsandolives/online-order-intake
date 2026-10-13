@@ -44,11 +44,8 @@ let orders = [], activeTab = "new", activeCatalog = localStorage.getItem("figsOl
 let soundEnabled = localStorage.getItem("figsOlivesOrderBellEnabled") === "1";
 let bellRinging = false;
 const money = value => `${Number(value || 0).toFixed(3)} د.ك`;
-const invoiceTotalsHtml = order => { const delivery = Number(order.deliveryFee || 0); const products = Number.isFinite(Number(order.subtotal)) ? Number(order.subtotal) : Number(order.total || 0) - delivery; return `<section class="a4-total"><span>قيمة المنتجات <b>${money(products)}</b></span><span>سعر التوصيل <b>${money(delivery)}</b></span><strong>الإجمالي <b>${money(order.total)}</b></strong></section>`; };
-// نسخة الطباعة التشغيلية لا تعرض مبلغ التوصيل؛ يبقى في PDF واتساب الخاص بالعميل.
-const invoicePrintTotalsHtml = order => { const delivery = Number(order.deliveryFee || 0); const products = Number.isFinite(Number(order.subtotal)) ? Number(order.subtotal) : Number(order.total || 0) - delivery; return `<section class="a4-total"><span>قيمة المنتجات <b>${money(products)}</b></span><strong>الإجمالي <b>${money(order.total)}</b></strong></section>`; };
 const preparationOverTwoHours = preparation => { if (!preparation) return false; const hours = (value, unit) => Math.max(1, Number(value) || 0) * (unit === "day" ? 24 : 1); return Math.max(hours(preparation.first, preparation.unit), preparation.hasSecond && Number(preparation.second) ? hours(preparation.second, preparation.secondUnit || preparation.unit) : 0) > 2; };
-const invoicePreparationNotice = order => (order.items || []).some(item => preparationOverTwoHours(item.preparation) || (item.options || []).some(option => preparationOverTwoHours(option.preparation))) ? `<p class="a4-preparation-notice">ملاحظة: يوجد في طلبك أصناف تأخذ وقت للتجهيز.. لذا يرجى العلم أنه قد يتأخر طلبك أو يتم تأجيله.</p>` : "";
+const invoicePreparationNotice = order => (order.items || []).some(item => preparationOverTwoHours(item.preparation) || (item.options || []).some(option => preparationOverTwoHours(option.preparation))) ? `<p class="inv-notice">ملاحظة: يوجد في طلبك أصناف تأخذ وقت للتجهيز.. لذا يرجى العلم أنه قد يتأخر طلبك أو يتم تأجيله.</p>` : "";
 const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[char]));
 const dateText = value => value ? new Date(Number(value) || value).toLocaleString("ar-KW", { dateStyle:"medium", timeStyle:"short" }) : "—";
 const branchName = id => ({ hawalli: "فرع حولي", yarmouk: "فرع اليرموك", abu: "فرع أبو الحصانية" }[id] || "الفرع");
@@ -135,26 +132,88 @@ function setLiveStatus(ok) {
 }
 function refreshTimers() { document.querySelectorAll("[data-elapsed]").forEach(node => { const order = orders.find(item => item.orderId === node.dataset.elapsed); if (!order) return; node.textContent = dueText(order); const level = elapsedLevel(order); node.className = `elapsed ${level}`; node.closest(".order-card")?.classList.toggle("is-late", level === "late"); }); }
 function optionSummary(option) { const name = option?.nameAr || option?.nameEn || option?.id || ""; return option?.isFilling || option?.flowStepId === "fillings" ? `${Math.max(1, Number(option.quantity) || 1)} ${name}` : name; }
-function invoiceItemName(item) { return `${escapeHtml(item.name || item.nameAr || item.id)}${item.options?.length ? `<small>${escapeHtml(item.options.map(optionSummary).join("، "))}</small>` : ""}`; }
-function invoiceHtml(order) { const delivery = order.mode === "pickup" ? order.branchId || "الفرع" : `${order.areaName || ""} — ${order.address || ""}`; const deliveryTime = order.scheduledAt ? dateText(order.scheduledAt) : asapWindowText(order) || (order.deliveryTiming === "asap" ? "أقرب وقت متاح" : "إبلاغ العميل عند الجاهزية"); return `<section class="a4-invoice"><header class="a4-head"><img src="logo.png" alt=""><div><h1>فاتورة شراء</h1><p>Purchase Invoice</p></div></header><section class="a4-meta"><div><b>رقم الفاتورة</b><strong>#${escapeHtml(order.orderId)}</strong><b>تاريخ الإصدار</b><strong>${dateText(order.createdAt)}</strong></div><div class="a4-company">شركة صحي ولذيذ للتجهيزات الغذائية<br>حولي، شارع تونس، مجمع علي فهد الخالد، دور الميزانين<br><span dir="ltr">66906605 · 22085888</span></div></section><p class="a4-customer-line">${escapeHtml(order.customerName || "—")} <i>·</i> <span dir="ltr">${escapeHtml(order.phone || "—")}</span> <i>·</i> ${escapeHtml(delivery)}</p><table class="a4-items"><thead><tr><th>#</th><th>الصنف</th><th>الملاحظات</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${(order.items || []).map((item,index) => `<tr><td>${index+1}</td><td><b>${invoiceItemName(item)}</b><small dir="ltr">${escapeHtml(item.nameEn || item.name || item.id)}</small></td><td>${escapeHtml(item.note || "—")}</td><td>${item.quantity}</td><td>${money(item.unitPrice)}</td><td>${money(item.total || item.unitPrice * item.quantity)}</td></tr>`).join("")}</tbody></table>${invoicePreparationNotice(order)}<section class="a4-summary-row"><div class="a4-delivery-time"><small>وقت التوصيل</small><b>${escapeHtml(deliveryTime)}</b></div>${invoiceTotalsHtml(order)}</section></section>`; }
-function trackerDeliveryTime(order) { const window = asapWindow(order); if (window) return `خلال ساعتين:<br>${new Intl.DateTimeFormat("ar-KW", { weekday:"long", day:"numeric", month:"long", year:"numeric" }).format(window.start)}،<br>${asapWindowText(order)}`; if (!order.scheduledAt) return order.deliveryTiming === "asap" ? "أقرب وقت متاح" : "إبلاغ العميل عند الجاهزية"; const end = new Date(order.scheduledAt), start = new Date(end.getTime() - 3600000); const date = new Intl.DateTimeFormat("ar-KW", { weekday:"long", day:"numeric", month:"long", year:"numeric" }).format(end); const time = value => new Intl.DateTimeFormat("ar-KW", {hour:"numeric",minute:"2-digit"}).format(value); return `وقت التوصيل المحدد:<br>${date}،<br>بين ${time(start)} إلى ${time(end)}`; }
-function trackerPrintInvoice(order) { const delivery = order.mode === "pickup" ? order.branchId || "الفرع" : `${order.areaName || ""} — ${order.address || ""}`; const rows = (order.items || []).map((item,index)=>`<tr><td>${index+1}</td><td><b>${invoiceItemName(item)}</b><small dir="ltr">${escapeHtml(item.nameEn || item.name || item.id)}</small></td><td>${escapeHtml(item.note || "—")}</td><td>${item.quantity}</td><td>${money(item.unitPrice)}</td><td>${money(item.total || item.unitPrice * item.quantity)}</td></tr>`).join(""); return `<section class="a4-invoice"><header class="a4-head"><img src="${PRINT_LOGO_URL}" alt="مخبز التين والزيتون"><div><h1>فاتورة شراء</h1><p>Purchase Invoice</p></div></header><section class="a4-meta"><div><b>رقم الفاتورة</b><strong>#${escapeHtml(order.orderId)}</strong><b>تاريخ الإصدار</b><strong>${dateText(order.createdAt)}</strong></div><div class="a4-company">شركة صحي ولذيذ للتجهيزات الغذائية<br>حولي، شارع تونس، مجمع علي فهد الخالد، دور الميزانين<br><span dir="ltr">66906605 · 22085888</span></div></section><p class="a4-customer-line">${escapeHtml(order.customerName || "—")} <i>·</i> <span dir="ltr">${escapeHtml(order.phone || "—")}</span> <i>·</i> ${escapeHtml(delivery)}</p><table class="a4-items"><thead><tr><th>#</th><th>الصنف</th><th>الملاحظات</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${rows}</tbody></table>${invoicePreparationNotice(order)}<section class="a4-summary-row"><div class="a4-delivery-time"><small>وقت التوصيل</small><b>${trackerDeliveryTime(order)}</b></div>${invoicePrintTotalsHtml(order)}</section><div class="a4-paid">✓&nbsp; مدفوع: ${escapeHtml(String(order.paymentMethod || "KNET").toUpperCase())}</div></section>`; }
 function showOrder(order) { const delivery = order.mode === "pickup" ? branchName(order.branchId) : `${order.areaName || ""} — ${order.address || ""}`; const items = (order.items || []).map((item,index)=>`<tr><td>${index+1}</td><td><b>${escapeHtml(item.name || item.nameAr || item.id)}</b><small dir="ltr">${escapeHtml(item.nameEn || item.name || item.id)}</small></td><td>${escapeHtml(item.note || "—")}</td><td>${item.quantity}</td><td>${money(item.unitPrice)}</td><td>${money(item.total || item.unitPrice * item.quantity)}</td></tr>`).join(""); $("#orderDetails").innerHTML = `<div class="order-view-top"><div><span>فاتورة شراء</span><h1>#${escapeHtml(order.orderId)}</h1><small>تاريخ الإصدار: ${dateText(order.createdAt)}</small></div><div class="dialog-actions">${order.status === "accepted" ? `<button class="print-button" data-print="${escapeHtml(order.orderId)}">طباعة الفاتورة</button>` : `<button class="accept-button" data-accept="${escapeHtml(order.orderId)}">قبول الطلب</button>`}</div></div><main class="order-view-grid"><section class="order-info-card"><h2>معلومات الفاتورة</h2><dl><div><dt>العميل</dt><dd>${escapeHtml(order.customerName || "—")}</dd></div><div><dt>الهاتف</dt><dd dir="ltr">${escapeHtml(order.phone || "—")}</dd></div><div><dt>نوع الطلب</dt><dd>${escapeHtml(deliveryText(order))}</dd></div><div><dt>العنوان / الفرع</dt><dd>${escapeHtml(delivery)}</dd></div><div><dt>موعد التوصيل</dt><dd>${escapeHtml(deliveryTimeText(order))}</dd></div><div><dt>طريقة الدفع</dt><dd>${String(order.paymentMethod || "KNET").toUpperCase()}</dd></div></dl><div class="order-total"><span>الإجمالي</span><strong>${money(order.total)}</strong></div></section><section class="order-products-card"><h2>المنتجات</h2><table class="items"><thead><tr><th>#</th><th>الصنف</th><th>الملاحظات</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${items || '<tr><td colspan="6">لا توجد منتجات</td></tr>'}</tbody></table></section></main>`; if (!$("#orderDialog").open) $("#orderDialog").showModal(); }
 async function acceptOrder(orderId) { const button = document.querySelector(`[data-accept="${CSS.escape(orderId)}"]`); if (button) { button.disabled = true; button.textContent = "جارٍ القبول…"; } try { const response = await fetch(`${API_BASE}/tracker/orders/accept`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({orderId})}); const data = await response.json().catch(()=>({})); if (!response.ok || !data.ok) throw new Error(data.error || "تعذر قبول الطلب"); const accepted = { ...(orders.find(order => order.orderId === orderId) || {}), status:"accepted", acceptedAt:new Date().toISOString() }; orders = orders.map(order => order.orderId === orderId ? accepted : order); render(); setSound(); showOrder(accepted); } catch(error) { alert(error.message || "تعذر قبول الطلب"); if (button) { button.disabled=false; button.textContent="قبول الطلب"; } } }
-async function printOrder(order) { document.querySelector(".print-sheet")?.remove(); const sheet = document.createElement("div"); sheet.className="print-sheet"; sheet.innerHTML=trackerPrintInvoice(order); document.body.append(sheet); const logo = sheet.querySelector("img"); await Promise.race([logo?.decode?.().catch(()=>undefined), new Promise(resolve => setTimeout(resolve, 1200))]); window.print(); sheet.remove(); }
-// Override the legacy print helper so pickup invoices explicitly name the branch.
+// ---- Printed invoice (A4, also used for the Yarmouk transfer PDF) ----
+// Product photos come from the public catalogue, matched by product id.
+let productImages = new Map();
+async function loadProductImages() {
+  try {
+    const response = await fetch(`${API_BASE}/catalog`, { headers: { Accept: "application/json" } });
+    const catalog = await response.json();
+    if (!response.ok || !Array.isArray(catalog?.products)) return;
+    productImages = new Map(catalog.products.map(product => [String(product.id), String(product.image || (Array.isArray(product.images) ? product.images[0] : "") || "")]).filter(([, image]) => /^https:\/\//.test(image)));
+  } catch (error) { console.warn("Product images unavailable for invoices.", error); }
+}
+function trackerDeliveryTime(order) {
+  const window = asapWindow(order);
+  if (window) return asapWindowText(order);
+  if (!order.scheduledAt) return order.deliveryTiming === "asap" ? "أقرب وقت متاح" : "إبلاغ العميل عند الجاهزية";
+  const end = new Date(order.scheduledAt), start = new Date(end.getTime() - 3600000);
+  const date = new Intl.DateTimeFormat("ar-KW", { weekday: "long", day: "numeric", month: "long" }).format(end);
+  return `${date}<br>بين ${clockText(start)} إلى ${clockText(end)}`;
+}
+function invParts(order) {
+  const pickup = order.mode === "pickup";
+  const restaurant = isRestaurantOrder(order);
+  const items = order.items || [];
+  const pieces = items.reduce((total, item) => total + (Number(item.quantity) || 0), 0);
+  const delivery = Number(order.deliveryFee || 0);
+  const products = Number.isFinite(Number(order.subtotal)) ? Number(order.subtotal) : Number(order.total || 0) - delivery;
+  const method = ({ knet: "KNET", applepay: "Apple Pay" })[String(order.paymentMethod || "knet").toLowerCase()] || String(order.paymentMethod).toUpperCase();
+  const brandAr = restaurant ? "مطعم التين الطبيعي" : "مخبز التين والزيتون";
+  const brandEn = restaurant ? "Natural Figs Restaurant" : "Figs &amp; Olives Bakery";
+  const place = escapeHtml(pickup ? branchName(order.branchId) : (order.areaName || "—"));
+  const address = pickup ? "" : escapeHtml(order.address || "");
+  return { pickup, items, pieces, products, method, brandAr, brandEn, place, address };
+}
+function invItemBits(item) {
+  const image = productImages.get(String(item.id)) || "";
+  return {
+    arabic: escapeHtml(item.name || item.nameAr || item.id),
+    english: escapeHtml(item.nameEn || item.name || item.id),
+    options: escapeHtml((item.options || []).map(optionSummary).filter(Boolean).join("، ")),
+    note: escapeHtml(item.note || ""),
+    qty: Number(item.quantity) || 0,
+    unit: money(item.unitPrice),
+    total: money(item.total || item.unitPrice * item.quantity),
+    photo: image ? `<img src="${escapeHtml(image)}" alt="" crossorigin="anonymous" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'inv-photo-empty'}))">` : `<span class="inv-photo-empty"></span>`
+  };
+}
+// Printed invoice: bakery identity (olive green and gold) with a notes column.
+function invoiceItemRow(item, index) {
+  const b = invItemBits(item);
+  return `<tr><td class="b-photo">${b.photo}</td><td class="b-name"><b>${b.arabic}</b><small dir="ltr">${b.english}</small>${b.options ? `<em>${b.options}</em>` : ""}</td><td class="b-note">${b.note ? `<span>${b.note}</span>` : ""}</td><td class="b-qty"><span>${b.qty}</span></td><td class="b-money">${b.unit}</td><td class="b-money b-total">${b.total}</td></tr>`;
+}
+function trackerPrintInvoice(order) {
+  const p = invParts(order);
+  return `<article class="inv inv-b">
+    <header class="b-head"><div class="b-brand"><img src="${PRINT_LOGO_URL}" alt=""><div><strong>${p.brandAr}</strong><small>${p.brandEn}</small></div></div><div class="b-no"><small>فاتورة شراء</small><strong dir="ltr">${escapeHtml(order.orderId)}</strong><span>${dateText(order.createdAt)}</span></div></header>
+    <section class="b-info">
+      <div><label>العميل</label><b>${escapeHtml(order.customerName || "—")}</b><span dir="ltr">${escapeHtml(order.phone || "")}</span></div>
+      <div><label>${p.pickup ? "الاستلام من" : "التوصيل إلى"}</label><b>${p.place}</b><span>${p.address}</span></div>
+      <div class="b-time"><label>${p.pickup ? "وقت الاستلام" : "وقت التوصيل"}</label><b>${trackerDeliveryTime(order)}</b></div>
+    </section>
+    <table class="b-items"><colgroup><col style="width:16mm"><col><col style="width:34mm"><col style="width:13mm"><col style="width:20mm"><col style="width:21mm"></colgroup>
+      <thead><tr><th colspan="2">المنتج</th><th>الملاحظات</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead>
+      <tbody>${p.items.map(invoiceItemRow).join("")}</tbody></table>
+    ${invoicePreparationNotice(order)}
+    <section class="b-foot"><div class="b-stamp"><strong>مدفوع</strong><span>PAID · ${escapeHtml(p.method)}</span></div><div class="b-totals"><div><span>قيمة المنتجات</span><b>${money(p.products)}</b></div><div class="b-grand"><span>الإجمالي</span><b>${money(order.total)}</b></div></div></section>
+    <footer class="b-contact">حولي، شارع تونس، مجمع علي فهد الخالد، دور الميزانين · <span dir="ltr">66906605 · 22085888</span></footer>
+  </article>`;
+}
+// Wait for the logo and product photos so they are not missing from the page.
+function invoiceImagesReady(root, timeout = 2500) {
+  const images = [...root.querySelectorAll("img")].map(image => image.complete ? Promise.resolve() : new Promise(resolve => { image.addEventListener("load", resolve, { once: true }); image.addEventListener("error", resolve, { once: true }); }));
+  return Promise.race([Promise.all(images), new Promise(resolve => setTimeout(resolve, timeout))]);
+}
 async function printOrder(order) {
   document.querySelector(".print-sheet")?.remove();
   const sheet = document.createElement("div");
   sheet.className = "print-sheet";
   sheet.innerHTML = trackerPrintInvoice(order);
-  if (order.mode === "pickup") {
-    const customerLine = sheet.querySelector(".a4-customer-line");
-    if (customerLine) customerLine.innerHTML = `${escapeHtml(order.customerName || "—")} <i>·</i> <span dir="ltr">${escapeHtml(order.phone || "—")}</span> <i>·</i> ${escapeHtml(pickupText(order))}`;
-  }
   document.body.append(sheet);
-  const logo = sheet.querySelector("img");
-  await Promise.race([logo?.decode?.().catch(() => undefined), new Promise(resolve => setTimeout(resolve, 1200))]);
+  await invoiceImagesReady(sheet);
   window.print();
   sheet.remove();
 }
@@ -168,9 +227,8 @@ async function createTransferPdfBase64(order) {
   document.body.append(exportNode);
   try {
     await document.fonts?.ready;
-    const logo = exportNode.querySelector("img");
-    await Promise.race([logo?.decode?.().catch(() => undefined), new Promise(resolve => setTimeout(resolve, 1200))]);
-    const source = exportNode.querySelector(".a4-invoice");
+    await invoiceImagesReady(exportNode);
+    const source = exportNode.querySelector(".inv");
     const canvas = await html2canvas(source, { scale: 2, backgroundColor: "#fff", useCORS: true, logging: false });
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "mm", "a4");
@@ -221,4 +279,6 @@ $("#pageSize").onchange=event=>{pageSize=Number(event.target.value);page=1;rende
 document.addEventListener("click",event=>{const view=event.target.closest("[data-view]"),accept=event.target.closest("[data-accept]"),print=event.target.closest("[data-print]"),transferMenu=event.target.closest("[data-transfer-menu]"),transfer=event.target.closest("[data-transfer]"),cancelTransfer=event.target.closest("[data-cancel-transfer]");if(view){const order=orders.find(item=>item.orderId===view.dataset.view);if(order)showOrder(order);}if(accept)acceptOrder(accept.dataset.accept);if(print){const order=orders.find(item=>item.orderId===print.dataset.print);if(order)printOrder(order);}if(transferMenu){const menu=transferMenu.closest(".transfer-menu");const open=menu.querySelector(".transfer-popover");document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(!open)menu.insertAdjacentHTML("beforeend",`<div class="transfer-popover"><button class="transfer-button" data-transfer="${escapeHtml(transferMenu.dataset.transferMenu)}">تحويل إلى اليرموك</button></div>`);}else if(!transfer&&!event.target.closest(".transfer-popover"))document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(transfer)transferToYarmouk(transfer.dataset.transfer,transfer);if(cancelTransfer)cancelYarmoukTransfer(cancelTransfer.dataset.cancelTransfer,cancelTransfer);});
 refreshOrders();
 setInterval(refreshOrders, 30000);
+loadProductImages();
+setInterval(loadProductImages, 10 * 60 * 1000);
 setInterval(refreshTimers,1000); selectCatalog(activeCatalog);
