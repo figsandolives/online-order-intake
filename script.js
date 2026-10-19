@@ -94,7 +94,7 @@ function asapWindow(order) {
 }
 const clockText = value => new Intl.DateTimeFormat("ar-KW", { hour: "numeric", minute: "2-digit" }).format(value);
 function asapWindowText(order) { const window = asapWindow(order); return window ? `بين ${clockText(window.start)} إلى ${clockText(window.end)}` : ""; }
-function deliveryTimeText(order) { return order.scheduledAt ? dateText(order.scheduledAt) : asapWindowText(order) || (order.deliveryTiming === "asap" ? "أقرب وقت" : "عند الجاهزية"); }
+function deliveryTimeText(order) { return order.scheduledAt ? dateText(order.scheduledAt) : asapWindowText(order) || (order.deliveryTiming === "asap" ? "أقرب وقت" : order.deliveryTiming === "notify" ? "إبلاغ العميل بالواتساب بوقت التوصيل" : "عند الجاهزية"); }
 function orderCardHtml(order) {
   const isNew = order.status !== "accepted", level = isNew ? elapsedLevel(order) : "";
   const badge = isNew ? `<span class="elapsed ${level}" data-elapsed="${escapeHtml(order.orderId)}">${dueText(order)}</span>` : `<span class="accepted-chip">مقبول</span>`;
@@ -148,6 +148,8 @@ async function loadProductImages() {
 function trackerDeliveryTime(order) {
   const window = asapWindow(order);
   if (window) return asapWindowText(order);
+  // «notify»: أصناف تحضيرها أطول من ساعتين، والعميل طلب إبلاغه بالواتساب (نفس نص فاتورة المنصة).
+  if (!order.scheduledAt && order.deliveryTiming === "notify") return "أرجو إبلاغي عن طريق الواتساب بتاريخ ووقت التوصيل المستغرق للتحضير ..";
   if (!order.scheduledAt) return order.deliveryTiming === "asap" ? "أقرب وقت متاح" : "إبلاغ العميل عند الجاهزية";
   const end = new Date(order.scheduledAt), start = new Date(end.getTime() - 3600000);
   const date = new Intl.DateTimeFormat("ar-KW", { weekday: "long", day: "numeric", month: "long" }).format(end);
