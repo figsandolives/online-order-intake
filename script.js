@@ -198,7 +198,7 @@ function trackerPrintInvoice(order) {
     <section class="b-info">
       <div><label>العميل</label><b>${escapeHtml(order.customerName || "—")}</b><span dir="ltr">${escapeHtml(order.phone || "")}</span></div>
       <div><label>${p.pickup ? "الاستلام من" : "التوصيل إلى"}</label><b>${p.place}</b><span>${p.address}</span></div>
-      <div class="b-time"><label>${p.pickup ? "وقت الاستلام" : "وقت التوصيل"}</label><b>${trackerDeliveryTime(order)}</b></div>
+      <div class="b-time${!order.scheduledAt && order.deliveryTiming === "notify" ? " is-long" : ""}"><label>${p.pickup ? "وقت الاستلام" : "وقت التوصيل"}</label><b>${trackerDeliveryTime(order)}</b></div>
     </section>
     <table class="b-items"><colgroup><col style="width:16mm"><col><col style="width:34mm"><col style="width:13mm"><col style="width:20mm"><col style="width:21mm"></colgroup>
       <thead><tr><th colspan="2">المنتج</th><th>الملاحظات</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead>

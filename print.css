@@ -25,11 +25,13 @@
 .b-brand img{width:15mm;height:15mm;object-fit:contain;background:#fff;border-radius:50%;padding:1mm;border:.3mm solid var(--line)}
 .b-brand div{display:grid}.b-brand strong{font-size:15pt;font-weight:900;line-height:1.3}.b-brand small{font-family:Georgia,serif;font-size:8pt;font-style:italic;color:#9a7428}
 .b-no{display:grid;justify-items:end;text-align:left}.b-no small{font-size:7.5pt;font-weight:700;color:var(--green2)}.b-no strong{font-family:Georgia,serif;font-size:20pt;line-height:1.1;color:var(--green)}.b-no span{font-size:7.5pt;font-weight:700;color:var(--soft)}
-.b-info{display:grid;grid-template-columns:1fr 1.3fr 1.2fr;gap:0;margin-bottom:4mm;background:var(--tint);border-radius:0 0 4mm 4mm}
+.b-info{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.2fr);gap:0;margin-bottom:4mm;background:var(--tint);border-radius:0 0 4mm 4mm}
 .b-info>div{display:grid;align-content:start;padding:3mm 4mm;border-inline-start:1px solid #fff}
 .b-info>div:first-child{border:0}
 .b-info label{font-size:7pt;font-weight:700;color:var(--green2)}.b-info b{font-size:9.5pt;font-weight:800}.b-info span{margin-top:.5mm;font-size:9pt;font-weight:800;color:var(--ink);text-align:right}
 .b-info .b-time{background:var(--cream);border-radius:0 0 0 4mm}.b-info .b-time b{font-size:10.5pt;color:var(--green);white-space:nowrap}
+/* نص الإبلاغ بالواتساب طويل: ينزل سطرين داخل خانته بدل ما يضغط خانة العميل والعنوان */
+.b-info .b-time.is-long b{white-space:normal;font-size:9pt;line-height:1.6}
 .b-items{width:100%;border-collapse:collapse;table-layout:fixed}
 .b-items thead{display:table-header-group}
 .b-items th{padding:1.8mm 2mm;font-size:7.5pt;font-weight:800;color:var(--green);text-align:right;border-bottom:1.5px solid var(--green)}
