@@ -22,12 +22,20 @@ async function apiRequest(path, options = {}) {
   return response;
 }
 
+// The server sends every waiting order but only the page of accepted orders on
+// screen, so the list stays small enough for weak mobile connections.
+let refreshSequence = 0;
 async function refreshOrders() {
+  const sequence = ++refreshSequence;
   try {
-    const response = await fetch(`${API_BASE}/tracker/orders`, { headers: { Accept: "application/json" } });
+    const query = new URLSearchParams({ view: "paged", catalog: activeCatalog, page: activeTab === "accepted" ? page : 1, pageSize });
+    const response = await fetch(`${API_BASE}/tracker/orders?${query}`, { headers: { Accept: "application/json" } });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok || !Array.isArray(data)) throw new Error(data.error || "تعذر قراءة الطلبات");
-    orders = data;
+    if (!response.ok || !Array.isArray(data.pending) || !Array.isArray(data.accepted)) throw new Error(data.error || "تعذر قراءة الطلبات");
+    if (sequence !== refreshSequence) return;
+    orders = [...data.pending, ...data.accepted];
+    acceptedTotal = Number(data.acceptedTotal) || 0;
+    if (activeTab === "accepted") page = data.page;
     setLiveStatus(true);
     render();
     setSound();
@@ -40,7 +48,7 @@ async function refreshOrders() {
     else console.warn("Order refresh failed; keeping the displayed list.", error);
   }
 }
-let orders = [], activeTab = "new", activeCatalog = localStorage.getItem("figsOlivesTrackerCatalog") === "restaurant" ? "restaurant" : "bakery", page = 1, pageSize = 12;
+let orders = [], acceptedTotal = 0, activeTab = "new", activeCatalog = localStorage.getItem("figsOlivesTrackerCatalog") === "restaurant" ? "restaurant" : "bakery", page = 1, pageSize = 12;
 let soundEnabled = localStorage.getItem("figsOlivesOrderBellEnabled") === "1";
 let bellRinging = false;
 const money = value => `${Number(value || 0).toFixed(3)} د.ك`;
@@ -111,21 +119,23 @@ function orderCardHtml(order) {
   </article>`;
 }
 function render() {
-  const listed = filteredOrders(), pages = Math.max(1, Math.ceil(listed.length / pageSize)); page = Math.min(page, pages);
+  const listed = filteredOrders(), acceptedView = activeTab === "accepted";
+  const pages = Math.max(1, Math.ceil((acceptedView ? acceptedTotal : listed.length) / pageSize)); page = Math.min(page, pages);
   const scoped = scopedOrders();
-  $("#newCount").textContent = scoped.filter(order => order.status !== "accepted").length; $("#acceptedCount").textContent = scoped.filter(order => order.status === "accepted").length;
+  $("#newCount").textContent = scoped.filter(order => order.status !== "accepted").length; $("#acceptedCount").textContent = acceptedTotal;
   ["bakery", "restaurant"].forEach(catalog => {
     const count = orders.filter(order => catalogOf(order) === catalog && order.status !== "accepted").length;
     const badge = $(`#${catalog}NewCount`); badge.textContent = count; badge.classList.toggle("hidden", !count);
   });
   $("#trackerBrand").textContent = activeCatalog === "restaurant" ? "مطعم التين الطبيعي" : "مخبز التين والزيتون";
-  const pageOrders = listed.slice((page - 1) * pageSize, page * pageSize);
+  const pageOrders = acceptedView ? listed : listed.slice((page - 1) * pageSize, page * pageSize);
   $("#ordersList").innerHTML = pageOrders.length ? pageOrders.map(orderCardHtml).join("") : (activeTab === "new" ? emptyStateHtml("لا توجد طلبات جديدة", "ستظهر الطلبات هنا فور وصولها") : emptyStateHtml("لا توجد طلبات مقبولة", "الطلبات التي تقبلها تنتقل إلى هنا"));
   $("#pageInfo").textContent = `${page} / ${pages}`; $("#previousPage").disabled = page <= 1; $("#nextPage").disabled = page >= pages;
   $("#pagination").classList.toggle("hidden", pages <= 1);
 }
 function setLiveStatus(ok) {
   const time = new Date().toLocaleTimeString("ar-KW", { hour: "numeric", minute: "2-digit" });
+  $("#liveStatus").classList.remove("loading");
   $("#liveStatus").classList.toggle("offline", !ok);
   if (ok) $("#liveStatusText").textContent = `آخر تحديث ${time}`;
   else $("#liveStatusText").textContent = "تعذر التحديث — إعادة المحاولة";
@@ -133,7 +143,7 @@ function setLiveStatus(ok) {
 function refreshTimers() { document.querySelectorAll("[data-elapsed]").forEach(node => { const order = orders.find(item => item.orderId === node.dataset.elapsed); if (!order) return; node.textContent = dueText(order); const level = elapsedLevel(order); node.className = `elapsed ${level}`; node.closest(".order-card")?.classList.toggle("is-late", level === "late"); }); }
 function optionSummary(option) { const name = option?.nameAr || option?.nameEn || option?.id || ""; return option?.isFilling || option?.flowStepId === "fillings" ? `${Math.max(1, Number(option.quantity) || 1)} ${name}` : name; }
 function showOrder(order) { const delivery = order.mode === "pickup" ? branchName(order.branchId) : `${order.areaName || ""} — ${order.address || ""}`; const items = (order.items || []).map((item,index)=>`<tr><td>${index+1}</td><td><b>${escapeHtml(item.name || item.nameAr || item.id)}</b><small dir="ltr">${escapeHtml(item.nameEn || item.name || item.id)}</small></td><td>${escapeHtml(item.note || "—")}</td><td>${item.quantity}</td><td>${money(item.unitPrice)}</td><td>${money(item.total || item.unitPrice * item.quantity)}</td></tr>`).join(""); $("#orderDetails").innerHTML = `<div class="order-view-top"><div><span>فاتورة شراء</span><h1>#${escapeHtml(order.orderId)}</h1><small>تاريخ الإصدار: ${dateText(order.createdAt)}</small></div><div class="dialog-actions">${order.status === "accepted" ? `<button class="print-button" data-print="${escapeHtml(order.orderId)}">طباعة الفاتورة</button>` : `<button class="accept-button" data-accept="${escapeHtml(order.orderId)}">قبول الطلب</button>`}</div></div><main class="order-view-grid"><section class="order-info-card"><h2>معلومات الفاتورة</h2><dl><div><dt>العميل</dt><dd>${escapeHtml(order.customerName || "—")}</dd></div><div><dt>الهاتف</dt><dd dir="ltr">${escapeHtml(order.phone || "—")}</dd></div><div><dt>نوع الطلب</dt><dd>${escapeHtml(deliveryText(order))}</dd></div><div><dt>العنوان / الفرع</dt><dd>${escapeHtml(delivery)}</dd></div><div><dt>موعد التوصيل</dt><dd>${escapeHtml(deliveryTimeText(order))}</dd></div><div><dt>طريقة الدفع</dt><dd>${String(order.paymentMethod || "KNET").toUpperCase()}</dd></div></dl><div class="order-total"><span>الإجمالي</span><strong>${money(order.total)}</strong></div></section><section class="order-products-card"><h2>المنتجات</h2><table class="items"><thead><tr><th>#</th><th>الصنف</th><th>الملاحظات</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${items || '<tr><td colspan="6">لا توجد منتجات</td></tr>'}</tbody></table></section></main>`; if (!$("#orderDialog").open) $("#orderDialog").showModal(); }
-async function acceptOrder(orderId) { const button = document.querySelector(`[data-accept="${CSS.escape(orderId)}"]`); if (button) { button.disabled = true; button.textContent = "جارٍ القبول…"; } try { const response = await fetch(`${API_BASE}/tracker/orders/accept`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({orderId})}); const data = await response.json().catch(()=>({})); if (!response.ok || !data.ok) throw new Error(data.error || "تعذر قبول الطلب"); const accepted = { ...(orders.find(order => order.orderId === orderId) || {}), status:"accepted", acceptedAt:new Date().toISOString() }; orders = orders.map(order => order.orderId === orderId ? accepted : order); render(); setSound(); showOrder(accepted); } catch(error) { alert(error.message || "تعذر قبول الطلب"); if (button) { button.disabled=false; button.textContent="قبول الطلب"; } } }
+async function acceptOrder(orderId) { const button = document.querySelector(`[data-accept="${CSS.escape(orderId)}"]`); if (button) { button.disabled = true; button.textContent = "جارٍ القبول…"; } try { const response = await fetch(`${API_BASE}/tracker/orders/accept`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({orderId})}); const data = await response.json().catch(()=>({})); if (!response.ok || !data.ok) throw new Error(data.error || "تعذر قبول الطلب"); const accepted = { ...(orders.find(order => order.orderId === orderId) || {}), status:"accepted", acceptedAt:new Date().toISOString() }; orders = orders.map(order => order.orderId === orderId ? accepted : order); acceptedTotal++; render(); setSound(); showOrder(accepted); refreshOrders(); } catch(error) { alert(error.message || "تعذر قبول الطلب"); if (button) { button.disabled=false; button.textContent="قبول الطلب"; } } }
 // ---- Printed invoice (A4, also used for the Yarmouk transfer PDF) ----
 // Product photos come from the public catalogue, matched by product id.
 let productImages = new Map();
@@ -278,8 +288,8 @@ async function enableOrderBell() { const audio = $("#newOrderSound"); try { audi
 function setSound() { if (soundEnabled && hasPendingOrders()) startOrderBell(); else stopOrderBell(); }
 $("#enableSoundButton").onclick = enableOrderBell;
 updateSoundButton();
-document.querySelectorAll("[data-tab]").forEach(button=>button.onclick=()=>{activeTab=button.dataset.tab; page=1; document.querySelectorAll("[data-tab]").forEach(tab=>tab.classList.toggle("active",tab===button)); render();});
-function selectCatalog(catalog) { activeCatalog = catalog === "restaurant" ? "restaurant" : "bakery"; localStorage.setItem("figsOlivesTrackerCatalog", activeCatalog); page = 1; document.body.dataset.catalog = activeCatalog; document.querySelectorAll(".catalog-switch [data-catalog]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.catalog === activeCatalog))); document.title = `متابعة طلبات الأونلاين | ${activeCatalog === "restaurant" ? "مطعم التين الطبيعي" : "مخبز التين والزيتون"}`; render(); setSound(); }
+document.querySelectorAll("[data-tab]").forEach(button=>button.onclick=()=>{activeTab=button.dataset.tab; page=1; document.querySelectorAll("[data-tab]").forEach(tab=>tab.classList.toggle("active",tab===button)); render(); if (activeTab==="accepted") refreshOrders();});
+function selectCatalog(catalog) { activeCatalog = catalog === "restaurant" ? "restaurant" : "bakery"; localStorage.setItem("figsOlivesTrackerCatalog", activeCatalog); page = 1; document.body.dataset.catalog = activeCatalog; document.querySelectorAll(".catalog-switch [data-catalog]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.catalog === activeCatalog))); document.title = `متابعة طلبات الأونلاين | ${activeCatalog === "restaurant" ? "مطعم التين الطبيعي" : "مخبز التين والزيتون"}`; render(); setSound(); refreshOrders(); }
 document.querySelectorAll(".catalog-switch [data-catalog]").forEach(button=>button.onclick=()=>selectCatalog(button.dataset.catalog));
 // The bakery/restaurant choice is hidden; five quick taps anywhere show it,
 // and the hide button tucks it away again once the device is set.
@@ -291,9 +301,9 @@ document.addEventListener("pointerdown", event => {
   if (revealTaps.length >= 5) { revealTaps = []; $("#catalogSwitch").classList.remove("hidden"); }
 });
 $("#hideCatalogSwitch").onclick = () => $("#catalogSwitch").classList.add("hidden");
-$("#pageSize").onchange=event=>{pageSize=Number(event.target.value);page=1;render();}; $("#previousPage").onclick=()=>{page--;render();}; $("#nextPage").onclick=()=>{page++;render();}; $("#closeDialog").onclick=()=>$("#orderDialog").close(); $("#orderDialog").onclick=event=>{if(event.target===$("#orderDialog")) $("#orderDialog").close();};
+const changePage=()=>{ if (activeTab==="accepted") refreshOrders(); else render(); };
+$("#pageSize").onchange=event=>{pageSize=Number(event.target.value);page=1;changePage();}; $("#previousPage").onclick=()=>{page--;changePage();}; $("#nextPage").onclick=()=>{page++;changePage();}; $("#closeDialog").onclick=()=>$("#orderDialog").close(); $("#orderDialog").onclick=event=>{if(event.target===$("#orderDialog")) $("#orderDialog").close();};
 document.addEventListener("click",event=>{const view=event.target.closest("[data-view]"),accept=event.target.closest("[data-accept]"),print=event.target.closest("[data-print]"),transferMenu=event.target.closest("[data-transfer-menu]"),transfer=event.target.closest("[data-transfer]"),cancelTransfer=event.target.closest("[data-cancel-transfer]");if(view){const order=orders.find(item=>item.orderId===view.dataset.view);if(order)showOrder(order);}if(accept)acceptOrder(accept.dataset.accept);if(print){const order=orders.find(item=>item.orderId===print.dataset.print);if(order)printOrder(order);}if(transferMenu){const menu=transferMenu.closest(".transfer-menu");const open=menu.querySelector(".transfer-popover");document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(!open)menu.insertAdjacentHTML("beforeend",`<div class="transfer-popover"><button class="transfer-button" data-transfer="${escapeHtml(transferMenu.dataset.transferMenu)}">تحويل إلى اليرموك</button></div>`);}else if(!transfer&&!event.target.closest(".transfer-popover"))document.querySelectorAll(".transfer-popover").forEach(node=>node.remove());if(transfer)transferToYarmouk(transfer.dataset.transfer,transfer);if(cancelTransfer)cancelYarmoukTransfer(cancelTransfer.dataset.cancelTransfer,cancelTransfer);});
-refreshOrders();
 setInterval(refreshOrders, 30000);
 loadProductImages();
 setInterval(loadProductImages, 10 * 60 * 1000);
